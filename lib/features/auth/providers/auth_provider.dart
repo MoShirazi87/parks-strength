@@ -60,15 +60,22 @@ class AuthService {
       },
     );
     
-    // Create user profile in database
-    if (response.user != null) {
-      await supabase.from('users').upsert({
-        'id': response.user!.id,
-        'email': email,
-        'first_name': firstName,
-        'last_name': lastName,
-        'created_at': DateTime.now().toIso8601String(),
-      });
+    // User profile is created automatically by database trigger
+    // Update with first/last name after signup
+    if (response.user != null && (firstName != null || lastName != null)) {
+      // Small delay to let trigger complete
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      try {
+        await supabase.from('users').update({
+          if (firstName != null) 'first_name': firstName,
+          if (lastName != null) 'last_name': lastName,
+          'updated_at': DateTime.now().toIso8601String(),
+        }).eq('id', response.user!.id);
+      } catch (e) {
+        // Ignore update errors - profile was still created
+        print('Note: Could not update profile with name: $e');
+      }
     }
     
     return response;

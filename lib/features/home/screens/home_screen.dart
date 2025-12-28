@@ -666,32 +666,37 @@ class _QuickActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 12),
+      padding: const EdgeInsets.only(right: 20), // Increased spacing
       child: GestureDetector(
         onTap: onTap,
-        child: Column(
-          children: [
-            Container(
-              width: AppConstants.categoryButtonSize,
-              height: AppConstants.categoryButtonSize,
-              decoration: BoxDecoration(
-                color: color.withAlpha(20),
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: color.withAlpha(50),
-                  width: 1.5,
+        child: SizedBox(
+          width: 70, // Fixed width for consistent spacing
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: color.withAlpha(25),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: color.withAlpha(60),
+                    width: 1.5,
+                  ),
                 ),
+                child: Icon(icon, color: color, size: 24),
               ),
-              child: Icon(icon, color: color, size: 24),
-            ),
-            AppSpacing.verticalSM,
-            Text(
-              label,
-              style: AppTypography.caption.copyWith(
-                color: AppColors.textSecondary,
+              const SizedBox(height: 10),
+              Text(
+                label,
+                style: AppTypography.caption.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

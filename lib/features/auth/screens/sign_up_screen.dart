@@ -20,8 +20,6 @@ class SignUpScreen extends ConsumerStatefulWidget {
 
 class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -32,8 +30,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
   @override
   void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -66,8 +62,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       await authService.signUpWithEmail(
         email: _emailController.text.trim(),
         password: _passwordController.text,
-        firstName: _firstNameController.text.trim(),
-        lastName: _lastNameController.text.trim(),
       );
 
       if (mounted) {
@@ -185,30 +179,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   ],
                 ),
                 AppSpacing.verticalLG,
-
-                // Name fields
-                Row(
-                  children: [
-                    Expanded(
-                      child: AppTextField(
-                        label: 'First Name',
-                        hint: 'John',
-                        controller: _firstNameController,
-                        textInputAction: TextInputAction.next,
-                      ),
-                    ),
-                    AppSpacing.horizontalMD,
-                    Expanded(
-                      child: AppTextField(
-                        label: 'Last Name',
-                        hint: 'Doe',
-                        controller: _lastNameController,
-                        textInputAction: TextInputAction.next,
-                      ),
-                    ),
-                  ],
-                ),
-                AppSpacing.verticalMD,
 
                 // Email field
                 EmailTextField(
