@@ -204,15 +204,21 @@ class _Bubble extends StatelessWidget {
         ),
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Text(
-              item.label,
-              textAlign: TextAlign.center,
-              style: AppTypography.labelMedium.copyWith(
-                color: isSelected
-                    ? AppColors.textPrimary
-                    : AppColors.textSecondary,
-                fontSize: item.size > 80 ? 14 : 12,
+            padding: EdgeInsets.all(item.size * 0.12),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                item.label,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.visible,
+                style: AppTypography.labelMedium.copyWith(
+                  color: isSelected
+                      ? AppColors.textPrimary
+                      : AppColors.textSecondary,
+                  fontSize: item.size * 0.14,
+                  height: 1.2,
+                ),
               ),
             ),
           ),
@@ -239,29 +245,29 @@ class BubbleItem {
 
 /// Goals bubbles
 List<BubbleItem> get goalBubbles => const [
-  BubbleItem(id: 'build_strength', label: 'Build\nStrength', size: 95),
-  BubbleItem(id: 'build_muscle', label: 'Build\nMuscle', size: 90),
-  BubbleItem(id: 'lose_fat', label: 'Lose\nFat', size: 75),
-  BubbleItem(id: 'improve_mobility', label: 'Improve\nMobility', size: 85),
-  BubbleItem(id: 'athletic_performance', label: 'Athletic\nPerformance', size: 100),
-  BubbleItem(id: 'general_fitness', label: 'General\nFitness', size: 90),
-  BubbleItem(id: 'functional_movement', label: 'Functional\nMovement', size: 95),
-  BubbleItem(id: 'rehabilitation', label: 'Rehab', size: 70),
-  BubbleItem(id: 'core_strength', label: 'Core\nStrength', size: 80),
-  BubbleItem(id: 'longevity', label: 'Longevity', size: 75),
+  BubbleItem(id: 'build_strength', label: 'Build Strength', size: 100),
+  BubbleItem(id: 'build_muscle', label: 'Build Muscle', size: 95),
+  BubbleItem(id: 'lose_fat', label: 'Lose Fat', size: 85),
+  BubbleItem(id: 'improve_mobility', label: 'Improve Mobility', size: 100),
+  BubbleItem(id: 'athletic_performance', label: 'Athletic Performance', size: 110),
+  BubbleItem(id: 'general_fitness', label: 'General Fitness', size: 100),
+  BubbleItem(id: 'functional_movement', label: 'Functional Movement', size: 110),
+  BubbleItem(id: 'rehabilitation', label: 'Rehab', size: 75),
+  BubbleItem(id: 'core_strength', label: 'Core Strength', size: 90),
+  BubbleItem(id: 'longevity', label: 'Longevity', size: 85),
 ];
 
 /// Exercise type bubbles
 List<BubbleItem> get exerciseTypeBubbles => const [
-  BubbleItem(id: 'strength_training', label: 'Strength\nTraining', size: 100),
-  BubbleItem(id: 'functional_training', label: 'Functional\nTraining', size: 95),
-  BubbleItem(id: 'muscular_strength', label: 'Muscular\nStrength', size: 90),
-  BubbleItem(id: 'circuit_training', label: 'Circuit\nTraining', size: 85),
-  BubbleItem(id: 'hiit', label: 'HIIT', size: 65),
-  BubbleItem(id: 'mobility_work', label: 'Mobility\nWork', size: 80),
-  BubbleItem(id: 'core_training', label: 'Core\nTraining', size: 80),
-  BubbleItem(id: 'bodyweight', label: 'Bodyweight', size: 85),
-  BubbleItem(id: 'barbell_training', label: 'Barbell\nTraining', size: 90),
-  BubbleItem(id: 'kettlebell_training', label: 'Kettlebell', size: 75),
+  BubbleItem(id: 'strength_training', label: 'Strength Training', size: 105),
+  BubbleItem(id: 'functional_training', label: 'Functional Training', size: 105),
+  BubbleItem(id: 'muscular_strength', label: 'Muscular Strength', size: 100),
+  BubbleItem(id: 'circuit_training', label: 'Circuit Training', size: 95),
+  BubbleItem(id: 'hiit', label: 'HIIT', size: 70),
+  BubbleItem(id: 'mobility_work', label: 'Mobility Work', size: 90),
+  BubbleItem(id: 'core_training', label: 'Core Training', size: 90),
+  BubbleItem(id: 'bodyweight', label: 'Bodyweight', size: 90),
+  BubbleItem(id: 'barbell_training', label: 'Barbell Training', size: 100),
+  BubbleItem(id: 'kettlebell_training', label: 'Kettlebell', size: 85),
 ];
 

@@ -1,0 +1,278 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2024-12-28T00:00:00Z",
+  "movement_patterns": [
+    {
+      "id": "squat",
+      "name": "Squat",
+      "description": "Bilateral knee-dominant lower body movement with vertical torso",
+      "category": "lower_body",
+      "force_type": "push",
+      "primary_muscles": ["quadriceps", "glutes"],
+      "secondary_muscles": ["hamstrings", "core", "calves"],
+      "joint_actions": ["knee_extension", "hip_extension"],
+      "examples": ["back squat", "front squat", "goblet squat", "leg press", "hack squat"],
+      "progressions": [
+        {"level": 1, "name": "Assisted Squat", "description": "Hold onto support for balance"},
+        {"level": 2, "name": "Bodyweight Squat", "description": "Air squat with proper depth"},
+        {"level": 3, "name": "Goblet Squat", "description": "Front-loaded squat with dumbbell/kettlebell"},
+        {"level": 4, "name": "Barbell Back Squat", "description": "Traditional barbell squat"},
+        {"level": 5, "name": "Front Squat", "description": "Barbell front rack position"},
+        {"level": 6, "name": "Pistol Squat", "description": "Single leg squat to full depth"}
+      ],
+      "common_cues": [
+        "Push knees out over toes",
+        "Keep chest up",
+        "Break at hips and knees simultaneously",
+        "Drive through heels",
+        "Maintain neutral spine"
+      ],
+      "contraindications": ["knee_injury", "hip_injury", "lower_back_injury"]
+    },
+    {
+      "id": "hinge",
+      "name": "Hinge",
+      "description": "Hip-dominant movement with minimal knee bend and forward torso lean",
+      "category": "lower_body",
+      "force_type": "pull",
+      "primary_muscles": ["hamstrings", "glutes", "lower_back"],
+      "secondary_muscles": ["core", "lats", "traps"],
+      "joint_actions": ["hip_extension"],
+      "examples": ["deadlift", "romanian deadlift", "good morning", "hip thrust", "kettlebell swing"],
+      "progressions": [
+        {"level": 1, "name": "Hip Hinge Drill", "description": "Wall touch hip hinge practice"},
+        {"level": 2, "name": "Glute Bridge", "description": "Supine hip extension"},
+        {"level": 3, "name": "Romanian Deadlift", "description": "Eccentric-focused hip hinge"},
+        {"level": 4, "name": "Conventional Deadlift", "description": "Full range floor deadlift"},
+        {"level": 5, "name": "Single Leg RDL", "description": "Unilateral hip hinge"},
+        {"level": 6, "name": "Deficit Deadlift", "description": "Extended range of motion"}
+      ],
+      "common_cues": [
+        "Push hips back like closing a door",
+        "Keep bar/weight close to body",
+        "Maintain flat back",
+        "Squeeze glutes at top",
+        "Soft knee bend, not a squat"
+      ],
+      "contraindications": ["lower_back_injury", "hamstring_injury"]
+    },
+    {
+      "id": "push_horizontal",
+      "name": "Horizontal Push",
+      "description": "Pressing movement perpendicular to the torso",
+      "category": "upper_body",
+      "force_type": "push",
+      "primary_muscles": ["chest", "front_delts", "triceps"],
+      "secondary_muscles": ["core", "serratus"],
+      "joint_actions": ["shoulder_flexion", "elbow_extension"],
+      "examples": ["bench press", "push-up", "dumbbell press", "chest fly", "dips"],
+      "progressions": [
+        {"level": 1, "name": "Wall Push-up", "description": "Incline push-up against wall"},
+        {"level": 2, "name": "Incline Push-up", "description": "Hands elevated push-up"},
+        {"level": 3, "name": "Standard Push-up", "description": "Floor push-up"},
+        {"level": 4, "name": "Dumbbell Bench Press", "description": "Unilateral stability challenge"},
+        {"level": 5, "name": "Barbell Bench Press", "description": "Traditional barbell press"},
+        {"level": 6, "name": "Weighted Dip", "description": "Added resistance dip"}
+      ],
+      "common_cues": [
+        "Retract and depress shoulder blades",
+        "Lower with control",
+        "Drive through chest, not shoulders",
+        "Keep elbows at 45-75 degrees",
+        "Full range of motion"
+      ],
+      "contraindications": ["shoulder_injury", "wrist_injury", "elbow_injury"]
+    },
+    {
+      "id": "push_vertical",
+      "name": "Vertical Push",
+      "description": "Pressing movement overhead, parallel to the torso",
+      "category": "upper_body",
+      "force_type": "push",
+      "primary_muscles": ["shoulders", "triceps"],
+      "secondary_muscles": ["upper_chest", "core", "traps"],
+      "joint_actions": ["shoulder_abduction", "elbow_extension"],
+      "examples": ["overhead press", "push press", "arnold press", "handstand push-up", "landmine press"],
+      "progressions": [
+        {"level": 1, "name": "Seated Dumbbell Press", "description": "Supported overhead press"},
+        {"level": 2, "name": "Standing Dumbbell Press", "description": "Core engaged pressing"},
+        {"level": 3, "name": "Barbell Overhead Press", "description": "Strict press"},
+        {"level": 4, "name": "Push Press", "description": "Leg drive assisted"},
+        {"level": 5, "name": "Pike Push-up", "description": "Bodyweight vertical push"},
+        {"level": 6, "name": "Handstand Push-up", "description": "Full bodyweight overhead"}
+      ],
+      "common_cues": [
+        "Stack wrists over elbows",
+        "Brace core tight",
+        "Push head through at top",
+        "Keep ribs down",
+        "Full lockout overhead"
+      ],
+      "contraindications": ["shoulder_injury", "neck_injury"]
+    },
+    {
+      "id": "pull_horizontal",
+      "name": "Horizontal Pull",
+      "description": "Rowing movement perpendicular to the torso",
+      "category": "upper_body",
+      "force_type": "pull",
+      "primary_muscles": ["back", "rear_delts", "biceps"],
+      "secondary_muscles": ["core", "forearms"],
+      "joint_actions": ["shoulder_extension", "elbow_flexion"],
+      "examples": ["barbell row", "dumbbell row", "cable row", "t-bar row", "inverted row"],
+      "progressions": [
+        {"level": 1, "name": "Seated Cable Row", "description": "Machine-assisted rowing"},
+        {"level": 2, "name": "Inverted Row", "description": "Bodyweight rowing"},
+        {"level": 3, "name": "Single Arm Dumbbell Row", "description": "Unilateral rowing"},
+        {"level": 4, "name": "Barbell Bent Over Row", "description": "Bilateral free weight row"},
+        {"level": 5, "name": "Pendlay Row", "description": "Explosive rowing from floor"},
+        {"level": 6, "name": "Weighted Inverted Row", "description": "Added resistance bodyweight"}
+      ],
+      "common_cues": [
+        "Lead with elbows",
+        "Squeeze shoulder blades together",
+        "Keep chest up",
+        "Control the negative",
+        "Pull to hip/lower chest"
+      ],
+      "contraindications": ["lower_back_injury", "shoulder_injury"]
+    },
+    {
+      "id": "pull_vertical",
+      "name": "Vertical Pull",
+      "description": "Pulling movement from overhead to chest",
+      "category": "upper_body",
+      "force_type": "pull",
+      "primary_muscles": ["lats", "biceps"],
+      "secondary_muscles": ["rear_delts", "core", "forearms"],
+      "joint_actions": ["shoulder_adduction", "elbow_flexion"],
+      "examples": ["pull-up", "chin-up", "lat pulldown", "muscle-up"],
+      "progressions": [
+        {"level": 1, "name": "Dead Hang", "description": "Grip and shoulder strength"},
+        {"level": 2, "name": "Scapular Pull-up", "description": "Shoulder blade engagement"},
+        {"level": 3, "name": "Negative Pull-up", "description": "Eccentric only"},
+        {"level": 4, "name": "Band-Assisted Pull-up", "description": "Reduced bodyweight"},
+        {"level": 5, "name": "Strict Pull-up", "description": "Full bodyweight"},
+        {"level": 6, "name": "Weighted Pull-up", "description": "Added resistance"}
+      ],
+      "common_cues": [
+        "Initiate with shoulder blades",
+        "Drive elbows down and back",
+        "Chest to bar",
+        "Control the descent",
+        "Full extension at bottom"
+      ],
+      "contraindications": ["shoulder_injury", "elbow_injury"]
+    },
+    {
+      "id": "carry",
+      "name": "Carry",
+      "description": "Loaded walking or holding patterns",
+      "category": "full_body",
+      "force_type": "static",
+      "primary_muscles": ["core", "traps", "forearms"],
+      "secondary_muscles": ["shoulders", "glutes", "calves"],
+      "joint_actions": ["isometric_stabilization"],
+      "examples": ["farmer carry", "suitcase carry", "overhead carry", "yoke walk", "sandbag carry"],
+      "progressions": [
+        {"level": 1, "name": "Unloaded Walk", "description": "Posture practice"},
+        {"level": 2, "name": "Light Farmer Carry", "description": "Bilateral light load"},
+        {"level": 3, "name": "Suitcase Carry", "description": "Unilateral anti-lateral flexion"},
+        {"level": 4, "name": "Heavy Farmer Carry", "description": "Bilateral heavy load"},
+        {"level": 5, "name": "Overhead Carry", "description": "Stability challenge"},
+        {"level": 6, "name": "Yoke/Mixed Carry", "description": "Maximum loading"}
+      ],
+      "common_cues": [
+        "Stand tall, shoulders back",
+        "Engage core throughout",
+        "Take controlled steps",
+        "Breathe steadily",
+        "Keep load close to body"
+      ],
+      "contraindications": ["shoulder_injury", "grip_injury"]
+    },
+    {
+      "id": "rotation",
+      "name": "Rotation",
+      "description": "Rotational and anti-rotation core movements",
+      "category": "core",
+      "force_type": "dynamic",
+      "primary_muscles": ["obliques", "core"],
+      "secondary_muscles": ["hips", "shoulders"],
+      "joint_actions": ["trunk_rotation", "anti_rotation"],
+      "examples": ["russian twist", "woodchop", "pallof press", "landmine rotation", "medicine ball throw"],
+      "progressions": [
+        {"level": 1, "name": "Dead Bug", "description": "Anti-rotation foundation"},
+        {"level": 2, "name": "Pallof Press Hold", "description": "Isometric anti-rotation"},
+        {"level": 3, "name": "Pallof Press", "description": "Dynamic anti-rotation"},
+        {"level": 4, "name": "Cable Woodchop", "description": "Controlled rotation"},
+        {"level": 5, "name": "Medicine Ball Rotation", "description": "Explosive rotation"},
+        {"level": 6, "name": "Landmine Rotation", "description": "Loaded rotation"}
+      ],
+      "common_cues": [
+        "Rotate from core, not arms",
+        "Keep hips stable",
+        "Control the movement",
+        "Engage obliques",
+        "Breathe through movement"
+      ],
+      "contraindications": ["lower_back_injury", "hip_injury"]
+    },
+    {
+      "id": "locomotion",
+      "name": "Locomotion",
+      "description": "Walking, running, crawling, and jumping patterns",
+      "category": "full_body",
+      "force_type": "dynamic",
+      "primary_muscles": ["quadriceps", "hamstrings", "glutes", "calves"],
+      "secondary_muscles": ["core", "hip_flexors"],
+      "joint_actions": ["hip_flexion", "knee_extension", "ankle_plantarflexion"],
+      "examples": ["walking lunge", "box jump", "sprint", "bear crawl", "broad jump"],
+      "progressions": [
+        {"level": 1, "name": "Walking", "description": "Basic locomotion"},
+        {"level": 2, "name": "Walking Lunge", "description": "Loaded locomotion"},
+        {"level": 3, "name": "Box Step-up", "description": "Elevated stepping"},
+        {"level": 4, "name": "Box Jump", "description": "Plyometric jumping"},
+        {"level": 5, "name": "Sprint", "description": "Maximum velocity running"},
+        {"level": 6, "name": "Weighted Sled Push", "description": "Loaded sprinting"}
+      ],
+      "common_cues": [
+        "Drive knees forward",
+        "Land softly",
+        "Maintain posture",
+        "Use arm swing",
+        "Push through ground"
+      ],
+      "contraindications": ["knee_injury", "ankle_injury"]
+    },
+    {
+      "id": "lunge",
+      "name": "Lunge",
+      "description": "Unilateral lower body movement with split stance",
+      "category": "lower_body",
+      "force_type": "push",
+      "primary_muscles": ["quadriceps", "glutes"],
+      "secondary_muscles": ["hamstrings", "core", "hip_flexors"],
+      "joint_actions": ["knee_extension", "hip_extension"],
+      "examples": ["forward lunge", "reverse lunge", "walking lunge", "Bulgarian split squat", "lateral lunge"],
+      "progressions": [
+        {"level": 1, "name": "Split Squat Hold", "description": "Static split stance"},
+        {"level": 2, "name": "Bodyweight Split Squat", "description": "Stationary lunge"},
+        {"level": 3, "name": "Reverse Lunge", "description": "Stepping back lunge"},
+        {"level": 4, "name": "Walking Lunge", "description": "Traveling lunge"},
+        {"level": 5, "name": "Bulgarian Split Squat", "description": "Rear foot elevated"},
+        {"level": 6, "name": "Deficit Bulgarian Split Squat", "description": "Extended ROM"}
+      ],
+      "common_cues": [
+        "Keep front knee over ankle",
+        "Lower straight down",
+        "Drive through front heel",
+        "Keep torso upright",
+        "Control the descent"
+      ],
+      "contraindications": ["knee_injury", "hip_injury", "balance_issues"]
+    }
+  ],
+  "total_patterns": 10
+}
+

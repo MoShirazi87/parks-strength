@@ -1,21 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/constants/app_spacing.dart';
-import '../../../shared/widgets/app_card.dart';
+import '../../../main.dart';
+import '../../auth/providers/auth_provider.dart';
+
+/// Provider for leaderboard data
+final leaderboardProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+  try {
+    final data = await supabase
+        .from('users')
+        .select('id, display_name, first_name, last_name, points, current_streak')
+        .order('points', ascending: false)
+        .limit(50);
+    return List<Map<String, dynamic>>.from(data);
+  } catch (e) {
+    print('Error fetching leaderboard: $e');
+    return [];
+  }
+});
+
+/// Provider for tribe messages
+final tribeMessagesProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+  try {
+    final data = await supabase
+        .from('tribe_messages')
+        .select('*, user:users(display_name, first_name)')
+        .order('created_at', ascending: false)
+        .limit(50);
+    return List<Map<String, dynamic>>.from(data);
+  } catch (e) {
+    print('Error fetching tribe messages: $e');
+    return [];
+  }
+});
 
 /// Tribe community screen
-class TribeScreen extends StatefulWidget {
+class TribeScreen extends ConsumerStatefulWidget {
   const TribeScreen({super.key});
 
   @override
-  State<TribeScreen> createState() => _TribeScreenState();
+  ConsumerState<TribeScreen> createState() => _TribeScreenState();
 }
 
-class _TribeScreenState extends State<TribeScreen>
+class _TribeScreenState extends ConsumerState<TribeScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final _messageController = TextEditingController();
 
   @override
   void initState() {
@@ -26,11 +59,37 @@ class _TribeScreenState extends State<TribeScreen>
   @override
   void dispose() {
     _tabController.dispose();
+    _messageController.dispose();
     super.dispose();
+  }
+  
+  Future<void> _sendMessage() async {
+    final message = _messageController.text.trim();
+    if (message.isEmpty) return;
+    
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return;
+    
+    try {
+      await supabase.from('tribe_messages').insert({
+        'user_id': userId,
+        'content': message,
+      });
+      _messageController.clear();
+      ref.invalidate(tribeMessagesProvider);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to send message: $e')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(currentUserProvider);
+    // TODO: Use leaderboard data for rankings display
+    final _ = ref.watch(leaderboardProvider);
+    
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -42,11 +101,11 @@ class _TribeScreenState extends State<TribeScreen>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Title dropdown
+                  // Title
                   Row(
                     children: [
                       Text(
-                        'TITAN',
+                        'TRIBE',
                         style: AppTypography.headlineMedium.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -57,19 +116,19 @@ class _TribeScreenState extends State<TribeScreen>
                       ),
                     ],
                   ),
-                  // Stats badges
+                  // Stats badges - real data
                   Row(
                     children: [
                       _StatsBadge(
                         icon: Icons.bolt,
                         iconColor: AppColors.points,
-                        value: '527',
+                        value: '${user.valueOrNull?.points ?? 0}',
                       ),
                       AppSpacing.horizontalSM,
                       _StatsBadge(
                         icon: Icons.local_fire_department,
                         iconColor: AppColors.streak,
-                        value: '43',
+                        value: '${user.valueOrNull?.currentStreak ?? 0}',
                       ),
                     ],
                   ),

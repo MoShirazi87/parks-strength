@@ -5,6 +5,7 @@ class AppAssets {
   // Base paths
   static const String _imagesPath = 'assets/images';
   static const String _iconsPath = 'assets/icons';
+  // ignore: unused_field - Reserved for future font assets
   static const String _fontsPath = 'assets/fonts';
   static const String _videosPath = 'assets/videos';
 

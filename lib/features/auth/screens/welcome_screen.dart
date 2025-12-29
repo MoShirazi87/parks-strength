@@ -9,7 +9,6 @@ import '../../../core/constants/app_typography.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/router/app_router.dart';
-import '../../../shared/widgets/app_button.dart';
 
 /// Welcome carousel screen with premium onboarding experience
 /// Inspired by Onemor fitness app design
@@ -288,9 +287,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.3),
                       AppSpacing.verticalMD,
 
-                      // Secondary option
+                      // Secondary option - Sign In for existing users
                       TextButton(
-                        onPressed: () => context.push(AppRoutes.signUp),
+                        onPressed: () => context.push(AppRoutes.signIn),
                         child: RichText(
                           text: TextSpan(
                             style: AppTypography.bodyMedium.copyWith(

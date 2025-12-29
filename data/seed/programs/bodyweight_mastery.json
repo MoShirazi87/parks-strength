@@ -1,0 +1,197 @@
+{
+  "id": "prog_bodyweight_mastery",
+  "name": "Bodyweight Mastery",
+  "slug": "bodyweight-mastery",
+  "description": "Master your body with progressive calisthenics. Build strength, skill, and control with zero equipment.",
+  "duration_weeks": 8,
+  "days_per_week": 4,
+  "difficulty": "intermediate",
+  "goal": "functional_movement",
+  "equipment_required": ["bodyweight", "pull_up_bar", "dip_station"],
+  "location": "home",
+  "image_url": "https://images.unsplash.com/photo-1599058945522-28d584b6f0ff?w=800",
+  "progression_type": "skill",
+  "weeks": [
+    {
+      "week_number": 1,
+      "theme": "Foundation",
+      "intensity": "RPE 6-7",
+      "focus": "Build base strength with fundamentals",
+      "workouts": [
+        {
+          "day": 1,
+          "name": "Push Focus",
+          "type": "push",
+          "estimated_minutes": 40,
+          "exercises": [
+            {"exercise_slug": "push-up", "sets": 4, "reps": "max", "rest_seconds": 90},
+            {"exercise_slug": "diamond-push-up", "sets": 3, "reps": "max", "rest_seconds": 90},
+            {"exercise_slug": "decline-push-up", "sets": 3, "reps": "max", "rest_seconds": 90},
+            {"exercise_slug": "tricep-dip", "sets": 3, "reps": "max", "rest_seconds": 90, "notes": "Bench dip if needed"},
+            {"exercise_slug": "plank", "sets": 3, "reps": "45 sec", "rest_seconds": 45}
+          ]
+        },
+        {
+          "day": 2,
+          "name": "Pull Focus",
+          "type": "pull",
+          "estimated_minutes": 40,
+          "exercises": [
+            {"exercise_slug": "pull-up", "sets": 4, "reps": "max", "rest_seconds": 120, "notes": "Negative if needed"},
+            {"exercise_slug": "chin-up", "sets": 3, "reps": "max", "rest_seconds": 120},
+            {"exercise_slug": "australian-row", "sets": 3, "reps": "12", "rest_seconds": 90, "notes": "Inverted row"},
+            {"exercise_slug": "dead-hang", "sets": 3, "reps": "30 sec", "rest_seconds": 60},
+            {"exercise_slug": "scapular-pull-up", "sets": 3, "reps": "10", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 3,
+          "name": "Legs Focus",
+          "type": "legs",
+          "estimated_minutes": 40,
+          "exercises": [
+            {"exercise_slug": "bodyweight-squat", "sets": 4, "reps": "20", "rest_seconds": 60},
+            {"exercise_slug": "walking-lunge", "sets": 3, "reps": "12 each", "rest_seconds": 90},
+            {"exercise_slug": "glute-bridge", "sets": 4, "reps": "15", "rest_seconds": 60},
+            {"exercise_slug": "split-squat", "sets": 3, "reps": "12 each", "rest_seconds": 90},
+            {"exercise_slug": "standing-calf-raise", "sets": 4, "reps": "25", "rest_seconds": 45}
+          ]
+        },
+        {
+          "day": 4,
+          "name": "Core & Skills",
+          "type": "core",
+          "estimated_minutes": 35,
+          "exercises": [
+            {"exercise_slug": "hanging-leg-raise", "sets": 4, "reps": "12", "rest_seconds": 60},
+            {"exercise_slug": "plank", "sets": 3, "reps": "60 sec", "rest_seconds": 45},
+            {"exercise_slug": "side-plank", "sets": 3, "reps": "30 sec each", "rest_seconds": 45},
+            {"exercise_slug": "hollow-hold", "sets": 3, "reps": "30 sec", "rest_seconds": 60},
+            {"exercise_slug": "superman", "sets": 3, "reps": "15", "rest_seconds": 45}
+          ]
+        }
+      ]
+    },
+    {
+      "week_number": 5,
+      "theme": "Skill Development",
+      "intensity": "RPE 8",
+      "focus": "Progress to advanced variations",
+      "workouts": [
+        {
+          "day": 1,
+          "name": "Push Focus",
+          "type": "push",
+          "estimated_minutes": 45,
+          "exercises": [
+            {"exercise_slug": "archer-push-up", "sets": 4, "reps": "6 each", "rest_seconds": 120, "notes": "Progress toward one arm"},
+            {"exercise_slug": "decline-push-up", "sets": 4, "reps": "max", "rest_seconds": 90},
+            {"exercise_slug": "diamond-push-up", "sets": 3, "reps": "max", "rest_seconds": 90},
+            {"exercise_slug": "tricep-dip", "sets": 4, "reps": "max", "rest_seconds": 90},
+            {"exercise_slug": "plank", "sets": 3, "reps": "90 sec", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 2,
+          "name": "Pull Focus",
+          "type": "pull",
+          "estimated_minutes": 45,
+          "exercises": [
+            {"exercise_slug": "pull-up", "sets": 5, "reps": "max", "rest_seconds": 150},
+            {"exercise_slug": "wide-grip-pull-up", "sets": 3, "reps": "max", "rest_seconds": 120},
+            {"exercise_slug": "chin-up", "sets": 4, "reps": "max", "rest_seconds": 120},
+            {"exercise_slug": "australian-row", "sets": 4, "reps": "15", "rest_seconds": 90},
+            {"exercise_slug": "active-hang", "sets": 3, "reps": "30 sec", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 3,
+          "name": "Legs Focus",
+          "type": "legs",
+          "estimated_minutes": 45,
+          "exercises": [
+            {"exercise_slug": "bulgarian-split-squat", "sets": 4, "reps": "10 each", "rest_seconds": 90},
+            {"exercise_slug": "pistol-squat", "sets": 4, "reps": "max each", "rest_seconds": 120, "notes": "Assisted if needed"},
+            {"exercise_slug": "jumping-lunge", "sets": 3, "reps": "10 each", "rest_seconds": 90},
+            {"exercise_slug": "single-leg-glute-bridge", "sets": 3, "reps": "12 each", "rest_seconds": 60},
+            {"exercise_slug": "standing-calf-raise", "sets": 4, "reps": "25", "rest_seconds": 45}
+          ]
+        },
+        {
+          "day": 4,
+          "name": "Core & Skills",
+          "type": "core",
+          "estimated_minutes": 40,
+          "exercises": [
+            {"exercise_slug": "hanging-leg-raise", "sets": 4, "reps": "15", "rest_seconds": 60},
+            {"exercise_slug": "l-sit", "sets": 4, "reps": "15 sec", "rest_seconds": 90, "notes": "On floor or parallettes"},
+            {"exercise_slug": "side-plank", "sets": 3, "reps": "45 sec each", "rest_seconds": 45},
+            {"exercise_slug": "ab-wheel-rollout", "sets": 3, "reps": "10", "rest_seconds": 60},
+            {"exercise_slug": "hollow-hold", "sets": 3, "reps": "45 sec", "rest_seconds": 60}
+          ]
+        }
+      ]
+    },
+    {
+      "week_number": 8,
+      "theme": "Advanced Skills",
+      "intensity": "RPE 9",
+      "focus": "Master advanced calisthenics",
+      "workouts": [
+        {
+          "day": 1,
+          "name": "Push Focus",
+          "type": "push",
+          "estimated_minutes": 50,
+          "exercises": [
+            {"exercise_slug": "one-arm-push-up", "sets": 4, "reps": "max each", "rest_seconds": 150, "notes": "Even partial reps count"},
+            {"exercise_slug": "archer-push-up", "sets": 4, "reps": "8 each", "rest_seconds": 120},
+            {"exercise_slug": "weighted-dip", "sets": 4, "reps": "max", "rest_seconds": 120, "notes": "Add weight if possible"},
+            {"exercise_slug": "diamond-push-up", "sets": 3, "reps": "max", "rest_seconds": 90},
+            {"exercise_slug": "plank", "sets": 2, "reps": "2 min", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 2,
+          "name": "Pull Focus",
+          "type": "pull",
+          "estimated_minutes": 50,
+          "exercises": [
+            {"exercise_slug": "muscle-up", "sets": 5, "reps": "max", "rest_seconds": 180, "notes": "Progression if needed"},
+            {"exercise_slug": "weighted-pull-up", "sets": 4, "reps": "6", "rest_seconds": 150},
+            {"exercise_slug": "wide-grip-pull-up", "sets": 4, "reps": "max", "rest_seconds": 120},
+            {"exercise_slug": "chin-up", "sets": 3, "reps": "max", "rest_seconds": 120},
+            {"exercise_slug": "dead-hang", "sets": 2, "reps": "max", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 3,
+          "name": "Legs Focus",
+          "type": "legs",
+          "estimated_minutes": 45,
+          "exercises": [
+            {"exercise_slug": "pistol-squat", "sets": 5, "reps": "max each", "rest_seconds": 120},
+            {"exercise_slug": "jumping-lunge", "sets": 4, "reps": "12 each", "rest_seconds": 90},
+            {"exercise_slug": "bulgarian-split-squat", "sets": 4, "reps": "12 each", "rest_seconds": 90},
+            {"exercise_slug": "single-leg-hip-thrust", "sets": 3, "reps": "12 each", "rest_seconds": 60},
+            {"exercise_slug": "box-jump", "sets": 3, "reps": "8", "rest_seconds": 90}
+          ]
+        },
+        {
+          "day": 4,
+          "name": "Core & Skills",
+          "type": "core",
+          "estimated_minutes": 45,
+          "exercises": [
+            {"exercise_slug": "dragon-flag", "sets": 4, "reps": "max", "rest_seconds": 120, "notes": "Negative if needed"},
+            {"exercise_slug": "l-sit", "sets": 4, "reps": "20 sec", "rest_seconds": 90},
+            {"exercise_slug": "hanging-leg-raise", "sets": 4, "reps": "20", "rest_seconds": 60},
+            {"exercise_slug": "ab-wheel-rollout", "sets": 4, "reps": "12", "rest_seconds": 60},
+            {"exercise_slug": "plank-with-arm-reach", "sets": 3, "reps": "10 each", "rest_seconds": 60}
+          ]
+        }
+      ]
+    }
+  ]
+}
+

@@ -75,22 +75,58 @@ class _OnboardingWizardScreenState
   }
 
   Future<void> _completeOnboarding() async {
-    final authService = ref.read(authServiceProvider);
-    await authService.updateProfile(
-      firstName: _firstNameController.text.trim(),
-      lastName: _lastNameController.text.trim(),
-      experienceLevel: _experienceLevel,
-      goals: _selectedGoals,
-      exercisePreferences: _selectedExerciseTypes,
-      trainingLocation: _trainingLocation,
-      preferredDays: _selectedDays,
-      reminderTime: _reminderTime,
-      injuries: _selectedInjuries,
-      onboardingCompleted: true,
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
     );
-
-    if (mounted) {
-      context.go(AppRoutes.programRecommendation);
+    
+    try {
+      final authService = ref.read(authServiceProvider);
+      final success = await authService.updateProfile(
+        firstName: _firstNameController.text.trim(),
+        lastName: _lastNameController.text.trim(),
+        experienceLevel: _experienceLevel,
+        goals: _selectedGoals,
+        exercisePreferences: _selectedExerciseTypes,
+        trainingLocation: _trainingLocation,
+        preferredDays: _selectedDays,
+        reminderTime: _reminderTime,
+        injuries: _selectedInjuries,
+        onboardingCompleted: true,
+        notificationWorkoutReminders: _workoutReminders,
+        notificationRestDayCheckins: _restDayCheckins,
+        notificationCoachUpdates: _coachUpdates,
+        notificationWeeklyProgress: _weeklyProgress,
+      );
+      
+      if (mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
+        
+        if (success) {
+          context.go(AppRoutes.programRecommendation);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to save preferences. Please try again.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -101,7 +137,7 @@ class _OnboardingWizardScreenState
       body: SafeArea(
         child: Column(
           children: [
-            // Top bar with back button
+            // Top bar with back button and sign out option
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               child: Row(
@@ -112,7 +148,22 @@ class _OnboardingWizardScreenState
                       onPressed: _previousStep,
                     )
                   else
-                    const SizedBox(width: 48),
+                    // Sign out button on first step
+                    TextButton.icon(
+                      onPressed: () async {
+                        await ref.read(authServiceProvider).signOut();
+                        if (mounted) {
+                          context.go(AppRoutes.welcome);
+                        }
+                      },
+                      icon: const Icon(Icons.logout, size: 18, color: AppColors.textMuted),
+                      label: Text(
+                        'Sign Out',
+                        style: AppTypography.bodySmall.copyWith(
+                          color: AppColors.textMuted,
+                        ),
+                      ),
+                    ),
                   const Spacer(),
                   // Skip button (optional steps only)
                   if (_currentStep > 1)

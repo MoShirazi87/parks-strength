@@ -1,0 +1,193 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2024-12-28T00:00:00Z",
+  "muscle_groups": [
+    {
+      "id": "chest",
+      "display_name": "Chest",
+      "scientific_name": "Pectoralis Major & Minor",
+      "category": "push",
+      "body_region": "upper_body",
+      "sub_muscles": [
+        {"id": "upper_chest", "name": "Upper Chest (Clavicular Head)", "exercises_focus": ["incline press", "low-to-high fly"]},
+        {"id": "mid_chest", "name": "Mid Chest (Sternal Head)", "exercises_focus": ["flat press", "fly"]},
+        {"id": "lower_chest", "name": "Lower Chest", "exercises_focus": ["decline press", "dips"]},
+        {"id": "inner_chest", "name": "Inner Chest", "exercises_focus": ["cable crossover", "squeeze press"]}
+      ],
+      "common_exercises": ["bench press", "push-up", "dumbbell fly", "cable crossover", "chest dip"],
+      "antagonist": "back",
+      "synergists": ["shoulders", "triceps"]
+    },
+    {
+      "id": "back",
+      "display_name": "Back",
+      "scientific_name": "Latissimus Dorsi, Rhomboids, Trapezius, Erector Spinae",
+      "category": "pull",
+      "body_region": "upper_body",
+      "sub_muscles": [
+        {"id": "lats", "name": "Latissimus Dorsi", "exercises_focus": ["pull-up", "lat pulldown", "row"]},
+        {"id": "upper_traps", "name": "Upper Trapezius", "exercises_focus": ["shrug", "upright row"]},
+        {"id": "mid_traps", "name": "Middle Trapezius", "exercises_focus": ["face pull", "rear delt fly"]},
+        {"id": "lower_traps", "name": "Lower Trapezius", "exercises_focus": ["prone Y raise", "face pull"]},
+        {"id": "rhomboids", "name": "Rhomboids", "exercises_focus": ["row", "face pull"]},
+        {"id": "teres", "name": "Teres Major & Minor", "exercises_focus": ["pull-up", "pullover"]},
+        {"id": "erector_spinae", "name": "Erector Spinae (Lower Back)", "exercises_focus": ["deadlift", "back extension", "good morning"]}
+      ],
+      "common_exercises": ["pull-up", "lat pulldown", "barbell row", "deadlift", "face pull"],
+      "antagonist": "chest",
+      "synergists": ["biceps", "rear_delts"]
+    },
+    {
+      "id": "shoulders",
+      "display_name": "Shoulders",
+      "scientific_name": "Deltoids (Anterior, Lateral, Posterior)",
+      "category": "push",
+      "body_region": "upper_body",
+      "sub_muscles": [
+        {"id": "front_delts", "name": "Anterior Deltoid (Front)", "exercises_focus": ["front raise", "overhead press", "incline press"]},
+        {"id": "side_delts", "name": "Lateral Deltoid (Side)", "exercises_focus": ["lateral raise", "upright row"]},
+        {"id": "rear_delts", "name": "Posterior Deltoid (Rear)", "exercises_focus": ["face pull", "rear delt fly", "reverse pec deck"]}
+      ],
+      "common_exercises": ["overhead press", "lateral raise", "face pull", "front raise", "arnold press"],
+      "antagonist": null,
+      "synergists": ["triceps", "traps"]
+    },
+    {
+      "id": "biceps",
+      "display_name": "Biceps",
+      "scientific_name": "Biceps Brachii, Brachialis, Brachioradialis",
+      "category": "pull",
+      "body_region": "upper_body",
+      "sub_muscles": [
+        {"id": "biceps_long_head", "name": "Long Head (Outer)", "exercises_focus": ["incline curl", "hammer curl"]},
+        {"id": "biceps_short_head", "name": "Short Head (Inner)", "exercises_focus": ["preacher curl", "concentration curl"]},
+        {"id": "brachialis", "name": "Brachialis", "exercises_focus": ["hammer curl", "reverse curl"]},
+        {"id": "brachioradialis", "name": "Brachioradialis (Forearm)", "exercises_focus": ["reverse curl", "hammer curl"]}
+      ],
+      "common_exercises": ["barbell curl", "dumbbell curl", "hammer curl", "preacher curl", "cable curl"],
+      "antagonist": "triceps",
+      "synergists": ["forearms"]
+    },
+    {
+      "id": "triceps",
+      "display_name": "Triceps",
+      "scientific_name": "Triceps Brachii (Long, Lateral, Medial Heads)",
+      "category": "push",
+      "body_region": "upper_body",
+      "sub_muscles": [
+        {"id": "triceps_long_head", "name": "Long Head", "exercises_focus": ["overhead extension", "skull crusher"]},
+        {"id": "triceps_lateral_head", "name": "Lateral Head", "exercises_focus": ["pushdown", "close grip bench"]},
+        {"id": "triceps_medial_head", "name": "Medial Head", "exercises_focus": ["pushdown", "dips"]}
+      ],
+      "common_exercises": ["tricep pushdown", "skull crusher", "dips", "close grip bench press", "overhead extension"],
+      "antagonist": "biceps",
+      "synergists": ["chest", "shoulders"]
+    },
+    {
+      "id": "forearms",
+      "display_name": "Forearms",
+      "scientific_name": "Flexor & Extensor Muscles of the Forearm",
+      "category": "pull",
+      "body_region": "upper_body",
+      "sub_muscles": [
+        {"id": "wrist_flexors", "name": "Wrist Flexors", "exercises_focus": ["wrist curl", "reverse curl"]},
+        {"id": "wrist_extensors", "name": "Wrist Extensors", "exercises_focus": ["reverse wrist curl", "wrist roller"]},
+        {"id": "grip_muscles", "name": "Grip Muscles", "exercises_focus": ["farmer carry", "dead hang", "plate pinch"]}
+      ],
+      "common_exercises": ["wrist curl", "reverse wrist curl", "farmer carry", "dead hang"],
+      "antagonist": null,
+      "synergists": ["biceps"]
+    },
+    {
+      "id": "quadriceps",
+      "display_name": "Quadriceps",
+      "scientific_name": "Rectus Femoris, Vastus Lateralis, Vastus Medialis, Vastus Intermedius",
+      "category": "push",
+      "body_region": "lower_body",
+      "sub_muscles": [
+        {"id": "rectus_femoris", "name": "Rectus Femoris", "exercises_focus": ["leg extension", "squat"]},
+        {"id": "vastus_lateralis", "name": "Vastus Lateralis (Outer)", "exercises_focus": ["squat", "leg press"]},
+        {"id": "vastus_medialis", "name": "Vastus Medialis (VMO/Teardrop)", "exercises_focus": ["leg extension", "split squat"]},
+        {"id": "vastus_intermedius", "name": "Vastus Intermedius", "exercises_focus": ["squat", "leg press"]}
+      ],
+      "common_exercises": ["squat", "leg press", "leg extension", "lunge", "front squat"],
+      "antagonist": "hamstrings",
+      "synergists": ["glutes"]
+    },
+    {
+      "id": "hamstrings",
+      "display_name": "Hamstrings",
+      "scientific_name": "Biceps Femoris, Semitendinosus, Semimembranosus",
+      "category": "pull",
+      "body_region": "lower_body",
+      "sub_muscles": [
+        {"id": "biceps_femoris", "name": "Biceps Femoris (Outer)", "exercises_focus": ["leg curl", "romanian deadlift"]},
+        {"id": "semitendinosus", "name": "Semitendinosus (Inner)", "exercises_focus": ["leg curl", "stiff leg deadlift"]},
+        {"id": "semimembranosus", "name": "Semimembranosus", "exercises_focus": ["leg curl", "good morning"]}
+      ],
+      "common_exercises": ["romanian deadlift", "leg curl", "good morning", "nordic curl", "stiff leg deadlift"],
+      "antagonist": "quadriceps",
+      "synergists": ["glutes", "lower_back"]
+    },
+    {
+      "id": "glutes",
+      "display_name": "Glutes",
+      "scientific_name": "Gluteus Maximus, Medius, Minimus",
+      "category": "push",
+      "body_region": "lower_body",
+      "sub_muscles": [
+        {"id": "glute_max", "name": "Gluteus Maximus", "exercises_focus": ["hip thrust", "squat", "deadlift"]},
+        {"id": "glute_med", "name": "Gluteus Medius", "exercises_focus": ["hip abduction", "clamshell", "lateral band walk"]},
+        {"id": "glute_min", "name": "Gluteus Minimus", "exercises_focus": ["hip abduction", "single leg exercises"]}
+      ],
+      "common_exercises": ["hip thrust", "squat", "deadlift", "glute bridge", "Bulgarian split squat"],
+      "antagonist": "hip_flexors",
+      "synergists": ["hamstrings", "lower_back"]
+    },
+    {
+      "id": "calves",
+      "display_name": "Calves",
+      "scientific_name": "Gastrocnemius, Soleus",
+      "category": "push",
+      "body_region": "lower_body",
+      "sub_muscles": [
+        {"id": "gastrocnemius", "name": "Gastrocnemius (Upper)", "exercises_focus": ["standing calf raise", "donkey calf raise"]},
+        {"id": "soleus", "name": "Soleus (Lower)", "exercises_focus": ["seated calf raise"]}
+      ],
+      "common_exercises": ["standing calf raise", "seated calf raise", "donkey calf raise", "calf press"],
+      "antagonist": "tibialis",
+      "synergists": []
+    },
+    {
+      "id": "abs",
+      "display_name": "Abs",
+      "scientific_name": "Rectus Abdominis, Transverse Abdominis",
+      "category": "core",
+      "body_region": "core",
+      "sub_muscles": [
+        {"id": "upper_abs", "name": "Upper Abs", "exercises_focus": ["crunch", "cable crunch"]},
+        {"id": "lower_abs", "name": "Lower Abs", "exercises_focus": ["leg raise", "reverse crunch"]},
+        {"id": "transverse_abdominis", "name": "Transverse Abdominis (Deep Core)", "exercises_focus": ["plank", "hollow hold", "dead bug"]}
+      ],
+      "common_exercises": ["plank", "crunch", "leg raise", "cable crunch", "ab wheel rollout"],
+      "antagonist": "lower_back",
+      "synergists": ["obliques"]
+    },
+    {
+      "id": "obliques",
+      "display_name": "Obliques",
+      "scientific_name": "External & Internal Obliques",
+      "category": "core",
+      "body_region": "core",
+      "sub_muscles": [
+        {"id": "external_obliques", "name": "External Obliques", "exercises_focus": ["side plank", "woodchop", "russian twist"]},
+        {"id": "internal_obliques", "name": "Internal Obliques", "exercises_focus": ["side plank", "pallof press"]}
+      ],
+      "common_exercises": ["russian twist", "side plank", "woodchop", "bicycle crunch", "pallof press"],
+      "antagonist": null,
+      "synergists": ["abs"]
+    }
+  ],
+  "total_groups": 13
+}
+

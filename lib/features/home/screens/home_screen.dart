@@ -9,9 +9,11 @@ import '../../../core/constants/app_typography.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/router/app_router.dart';
+import '../../../data/providers/workout_provider.dart';
+import '../../../data/providers/program_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 
-/// Home screen - main dashboard with TITAN-inspired design
+/// Home screen - main dashboard with real data
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -25,6 +27,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider);
+    final todaysWorkout = ref.watch(todaysWorkoutProvider);
+    final recentLogs = ref.watch(recentWorkoutLogsProvider);
+    final activeEnrollment = ref.watch(activeEnrollmentProvider);
+    final programs = ref.watch(programsProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -40,7 +46,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 child: _TopBar(
                   points: user.valueOrNull?.points ?? 0,
-                  streak: user.valueOrNull?.streakCurrent ?? 0,
+                  streak: user.valueOrNull?.currentStreak ?? 0,
                 ),
               ),
             ),
@@ -51,13 +57,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 padding: EdgeInsets.symmetric(
                   horizontal: AppSpacing.screenHorizontal,
                 ),
-                child: _HeroWorkoutCard(
-                  programName: 'TITAN',
-                  workoutTitle: 'Push Day',
-                  duration: 45,
-                  exerciseCount: 6,
-                  onTap: () => context.push('/workout/demo'),
-                ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.1),
+                child: todaysWorkout.when(
+                  loading: () => _buildHeroCardPlaceholder(),
+                  error: (_, __) => _buildDefaultHeroCard(context, activeEnrollment.valueOrNull),
+                  data: (workout) {
+                    if (workout == null) {
+                      return _buildDefaultHeroCard(context, activeEnrollment.valueOrNull);
+                    }
+                    
+                    final programName = activeEnrollment.valueOrNull?['program']?['name'] ?? 'TITAN';
+                    
+                    return _HeroWorkoutCard(
+                      programName: programName,
+                      workoutTitle: workout.name,
+                      duration: workout.estimatedDurationMinutes,
+                      exerciseCount: workout.allExercises.length,
+                      onTap: () => context.push('/workout/${workout.id}'),
+                    ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.1);
+                  },
+                ),
               ),
             ),
             
@@ -94,35 +112,42 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: ListView(
                         scrollDirection: Axis.horizontal,
                         children: [
+                          // Quick workout generators - intelligently filter by user equipment
                           _QuickActionCard(
-                            icon: Icons.bolt_rounded,
-                            label: 'Strength',
+                            icon: Icons.arrow_upward_rounded,
+                            label: 'Push',
                             color: AppColors.primary,
-                            onTap: () {},
+                            onTap: () => context.push('/quick-workout/push'),
+                          ),
+                          _QuickActionCard(
+                            icon: Icons.arrow_downward_rounded,
+                            label: 'Pull',
+                            color: AppColors.accent,
+                            onTap: () => context.push('/quick-workout/pull'),
                           ),
                           _QuickActionCard(
                             icon: Icons.directions_run_rounded,
-                            label: 'Warm Up',
-                            color: AppColors.streak,
-                            onTap: () {},
+                            label: 'Legs',
+                            color: AppColors.success,
+                            onTap: () => context.push('/quick-workout/legs'),
+                          ),
+                          _QuickActionCard(
+                            icon: Icons.circle_outlined,
+                            label: 'Core',
+                            color: AppColors.warning,
+                            onTap: () => context.push('/quick-workout/core'),
+                          ),
+                          _QuickActionCard(
+                            icon: Icons.person_rounded,
+                            label: 'Full Body',
+                            color: AppColors.tertiary,
+                            onTap: () => context.push('/quick-workout/fullbody'),
                           ),
                           _QuickActionCard(
                             icon: Icons.fitness_center_rounded,
-                            label: 'Dumbbell',
-                            color: AppColors.tertiary,
-                            onTap: () {},
-                          ),
-                          _QuickActionCard(
-                            icon: Icons.self_improvement_rounded,
-                            label: 'Mobility',
-                            color: AppColors.success,
-                            onTap: () {},
-                          ),
-                          _QuickActionCard(
-                            icon: Icons.timer_rounded,
-                            label: 'HIIT',
-                            color: AppColors.accent,
-                            onTap: () {},
+                            label: 'Programs',
+                            color: AppColors.streak,
+                            onTap: () => context.push(AppRoutes.programs),
                           ),
                           SizedBox(width: AppSpacing.screenHorizontal),
                         ],
@@ -162,37 +187,45 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             SliverToBoxAdapter(
               child: SizedBox(
                 height: 180,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppSpacing.screenHorizontal,
-                  ),
-                  children: [
-                    _ProgramCard(
-                      name: 'TITAN',
-                      description: '12-Week Strength Builder',
-                      color: AppColors.programTitan,
-                      imageUrl: 'https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=600',
-                      onTap: () => context.push('/programs/titan'),
-                    ),
-                    _ProgramCard(
-                      name: 'FORGE',
-                      description: '8-Week Muscle Building',
-                      color: AppColors.programForge,
-                      imageUrl: 'https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg?auto=compress&cs=tinysrgb&w=600',
-                      onTap: () => context.push('/programs/forge'),
-                    ),
-                    _ProgramCard(
-                      name: 'NOMAD',
-                      description: 'Minimal Equipment',
-                      color: AppColors.programNomad,
-                      imageUrl: 'https://images.pexels.com/photos/2294361/pexels-photo-2294361.jpeg?auto=compress&cs=tinysrgb&w=600',
-                      onTap: () => context.push('/programs/nomad'),
-                    ),
-                    SizedBox(width: AppSpacing.screenHorizontal),
-                  ],
-                ),
-              ).animate().fadeIn(delay: 300.ms),
+                child: programs.when(
+                  loading: () => const Center(child: CircularProgressIndicator()),
+                  error: (_, __) => _buildDefaultPrograms(context),
+                  data: (programList) {
+                    if (programList.isEmpty) {
+                      return _buildDefaultPrograms(context);
+                    }
+                    
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: AppSpacing.screenHorizontal,
+                      ),
+                      itemCount: programList.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index == programList.length) {
+                          return SizedBox(width: AppSpacing.screenHorizontal);
+                        }
+                        
+                        final program = programList[index];
+                        Color color = AppColors.programTitan;
+                        if (program.accentColor != null) {
+                          try {
+                            color = Color(int.parse(program.accentColor!.replaceFirst('#', '0xFF')));
+                          } catch (_) {}
+                        }
+                        
+                        return _ProgramCard(
+                          name: program.name.toUpperCase(),
+                          description: program.shortDescription ?? '${program.durationWeeks}-Week Program',
+                          color: color,
+                          imageUrl: _getProgramImage(program.slug ?? ''),
+                          onTap: () => context.push('/programs/${program.id}'),
+                        );
+                      },
+                    );
+                  },
+                ).animate().fadeIn(delay: 300.ms),
+              ),
             ),
             
             SliverToBoxAdapter(child: AppSpacing.verticalLG),
@@ -208,20 +241,36 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   children: [
                     Text('Recent Activity', style: AppTypography.headlineSmall),
                     AppSpacing.verticalMD,
-                    _RecentActivityCard(
-                      title: 'Upper Body Push',
-                      date: DateTime.now().subtract(const Duration(days: 1)),
-                      duration: 42,
-                      prCount: 1,
-                      volumeChange: 5.2,
-                    ),
-                    AppSpacing.verticalSM,
-                    _RecentActivityCard(
-                      title: 'Lower Body Strength',
-                      date: DateTime.now().subtract(const Duration(days: 3)),
-                      duration: 55,
-                      prCount: 2,
-                      volumeChange: 8.7,
+                    recentLogs.when(
+                      loading: () => const Center(child: CircularProgressIndicator()),
+                      error: (_, __) => _buildEmptyActivity(),
+                      data: (logs) {
+                        if (logs.isEmpty) {
+                          return _buildEmptyActivity();
+                        }
+                        
+                        return Column(
+                          children: logs.take(3).map((log) {
+                            final workoutName = log['workout']?['name'] ?? 'Workout';
+                            final completedAt = log['completed_at'] != null 
+                                ? DateTime.parse(log['completed_at'] as String)
+                                : DateTime.now();
+                            final durationSeconds = log['duration_seconds'] as int? ?? 0;
+                            final totalVolume = (log['total_volume'] as num?)?.toDouble() ?? 0;
+                            
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: _RecentActivityCard(
+                                title: workoutName,
+                                date: completedAt,
+                                duration: durationSeconds ~/ 60,
+                                prCount: 0, // TODO: Count PRs from log
+                                volume: totalVolume,
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      },
                     ),
                   ],
                 ).animate().fadeIn(delay: 400.ms),
@@ -236,6 +285,105 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
     );
+  }
+  
+  Widget _buildHeroCardPlaceholder() {
+    return Container(
+      height: AppConstants.heroCardHeight,
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppConstants.radiusHero),
+      ),
+      child: const Center(child: CircularProgressIndicator()),
+    );
+  }
+  
+  Widget _buildDefaultHeroCard(BuildContext context, Map<String, dynamic>? enrollment) {
+    final programName = enrollment?['program']?['name'] ?? 'TITAN';
+    
+    return _HeroWorkoutCard(
+      programName: programName,
+      workoutTitle: 'Push Day',
+      duration: 45,
+      exerciseCount: 6,
+      onTap: () => context.push('/workout/demo'),
+    ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.1);
+  }
+  
+  Widget _buildDefaultPrograms(BuildContext context) {
+    return ListView(
+      scrollDirection: Axis.horizontal,
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.screenHorizontal,
+      ),
+      children: [
+        _ProgramCard(
+          name: 'TITAN',
+          description: '12-Week Strength Builder',
+          color: AppColors.programTitan,
+          imageUrl: 'https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=600',
+          onTap: () => context.push(AppRoutes.programs),
+        ),
+        _ProgramCard(
+          name: 'FORGE',
+          description: '3-Day Full Body',
+          color: AppColors.programBlaze,
+          imageUrl: 'https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg?auto=compress&cs=tinysrgb&w=600',
+          onTap: () => context.push(AppRoutes.programs),
+        ),
+        _ProgramCard(
+          name: 'NOMAD',
+          description: 'Minimal Equipment',
+          color: AppColors.programNomad,
+          imageUrl: 'https://images.pexels.com/photos/2294361/pexels-photo-2294361.jpeg?auto=compress&cs=tinysrgb&w=600',
+          onTap: () => context.push(AppRoutes.programs),
+        ),
+        SizedBox(width: AppSpacing.screenHorizontal),
+      ],
+    );
+  }
+  
+  Widget _buildEmptyActivity() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppConstants.radiusL),
+        border: Border.all(color: AppColors.borderSubtle),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.fitness_center_rounded,
+            size: 48,
+            color: AppColors.textMuted,
+          ),
+          AppSpacing.verticalMD,
+          Text(
+            'No workouts yet',
+            style: AppTypography.titleMedium.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+          AppSpacing.verticalSM,
+          Text(
+            'Start a program to begin your journey',
+            style: AppTypography.caption,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+  
+  String _getProgramImage(String slug) {
+    final images = {
+      'titan': 'https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=600',
+      'forge': 'https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg?auto=compress&cs=tinysrgb&w=600',
+      'nomad': 'https://images.pexels.com/photos/2294361/pexels-photo-2294361.jpeg?auto=compress&cs=tinysrgb&w=600',
+      'foundation-strength': 'https://images.pexels.com/photos/4164761/pexels-photo-4164761.jpeg?auto=compress&cs=tinysrgb&w=600',
+    };
+    return images[slug] ?? 'https://images.pexels.com/photos/4164761/pexels-photo-4164761.jpeg?auto=compress&cs=tinysrgb&w=600';
   }
 }
 
@@ -347,7 +495,10 @@ class _StatBadge extends StatelessWidget {
           AppSpacing.horizontalXS,
           Text(
             value,
-            style: AppTypography.counter.copyWith(color: color),
+            style: AppTypography.labelMedium.copyWith(
+              color: color,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),
@@ -461,15 +612,16 @@ class _HeroWorkoutCard extends StatelessWidget {
                         ),
                         AppSpacing.horizontalXS,
                         Text(
-                          programName,
-                          style: AppTypography.badge.copyWith(
+                          programName.toUpperCase(),
+                          style: AppTypography.labelSmall.copyWith(
                             color: AppColors.programTitan,
                             letterSpacing: 1.5,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           ' / Coach Brian',
-                          style: AppTypography.badge.copyWith(
+                          style: AppTypography.labelSmall.copyWith(
                             color: AppColors.textMuted,
                           ),
                         ),
@@ -666,11 +818,11 @@ class _QuickActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 20), // Increased spacing
+      padding: const EdgeInsets.only(right: 20),
       child: GestureDetector(
         onTap: onTap,
         child: SizedBox(
-          width: 70, // Fixed width for consistent spacing
+          width: 70,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -788,9 +940,10 @@ class _ProgramCard extends StatelessWidget {
                       ),
                       child: Text(
                         name,
-                        style: AppTypography.badge.copyWith(
+                        style: AppTypography.labelSmall.copyWith(
                           color: Colors.white,
                           letterSpacing: 1.5,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
@@ -823,14 +976,14 @@ class _RecentActivityCard extends StatelessWidget {
   final DateTime date;
   final int duration;
   final int prCount;
-  final double volumeChange;
+  final double volume;
 
   const _RecentActivityCard({
     required this.title,
     required this.date,
     required this.duration,
     required this.prCount,
-    required this.volumeChange,
+    required this.volume,
   });
 
   @override
@@ -899,40 +1052,30 @@ class _RecentActivityCard extends StatelessWidget {
             ),
           ),
           
-          // Volume change
+          // Volume
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: AppColors.success.withAlpha(20),
+              color: AppColors.surface,
               borderRadius: BorderRadius.circular(AppConstants.radiusFull),
+              border: Border.all(color: AppColors.borderSubtle),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  volumeChange >= 0 
-                      ? Icons.trending_up_rounded 
-                      : Icons.trending_down_rounded,
-                  size: 14,
-                  color: volumeChange >= 0 
-                      ? AppColors.success 
-                      : AppColors.error,
-                ),
-                AppSpacing.horizontalXS,
-                Text(
-                  '${volumeChange >= 0 ? '+' : ''}${volumeChange.toStringAsFixed(1)}%',
-                  style: AppTypography.labelSmall.copyWith(
-                    color: volumeChange >= 0 
-                        ? AppColors.success 
-                        : AppColors.error,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
+            child: Text(
+              '${_formatVolume(volume)} lbs',
+              style: AppTypography.labelSmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
           ),
         ],
       ),
     );
+  }
+  
+  String _formatVolume(double volume) {
+    if (volume >= 1000) {
+      return '${(volume / 1000).toStringAsFixed(1)}k';
+    }
+    return volume.toStringAsFixed(0);
   }
 }

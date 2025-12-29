@@ -34,6 +34,10 @@ class WorkoutModel extends Equatable {
   });
 
   factory WorkoutModel.fromJson(Map<String, dynamic> json) {
+    // Handle both 'workout_sections' (from Supabase) and 'sections' (direct)
+    final sectionsData = json['workout_sections'] as List<dynamic>? ?? 
+                         json['sections'] as List<dynamic>?;
+    
     return WorkoutModel(
       id: json['id'] as String,
       programId: json['program_id'] as String?,
@@ -50,7 +54,7 @@ class WorkoutModel extends Equatable {
       updatedAt: json['updated_at'] != null
           ? DateTime.parse(json['updated_at'] as String)
           : null,
-      sections: (json['sections'] as List<dynamic>?)
+      sections: sectionsData
           ?.map((s) => WorkoutSection.fromJson(s as Map<String, dynamic>))
           .toList(),
     );
@@ -191,6 +195,10 @@ class WorkoutSection extends Equatable {
   });
 
   factory WorkoutSection.fromJson(Map<String, dynamic> json) {
+    // Handle both 'workout_exercises' (from Supabase) and 'exercises' (direct)
+    final exercisesData = json['workout_exercises'] as List<dynamic>? ?? 
+                          json['exercises'] as List<dynamic>?;
+    
     return WorkoutSection(
       id: json['id'] as String,
       workoutId: json['workout_id'] as String,
@@ -198,7 +206,7 @@ class WorkoutSection extends Equatable {
       sectionType: json['section_type'] as String,
       orderIndex: json['order_index'] as int,
       isCollapsedByDefault: json['is_collapsed_by_default'] as bool? ?? false,
-      exercises: (json['exercises'] as List<dynamic>?)
+      exercises: exercisesData
           ?.map((e) => WorkoutExercise.fromJson(e as Map<String, dynamic>))
           .toList(),
     );

@@ -86,12 +86,14 @@ class UserModel extends Equatable {
       unitsPreference: json['units_preference'] as String? ?? 'imperial',
       onboardingCompleted: json['onboarding_completed'] as bool? ?? false,
       points: json['points'] as int? ?? 0,
-      streakCurrent: json['streak_current'] as int? ?? 0,
-      streakLongest: json['streak_longest'] as int? ?? 0,
-      streakLastWorkout: json['streak_last_workout'] != null
-          ? DateTime.parse(json['streak_last_workout'] as String)
-          : null,
-      streakFreezes: json['streak_freezes'] as int? ?? 0,
+      streakCurrent: json['current_streak'] as int? ?? json['streak_current'] as int? ?? 0,
+      streakLongest: json['longest_streak'] as int? ?? json['streak_longest'] as int? ?? 0,
+      streakLastWorkout: json['last_workout_date'] != null
+          ? DateTime.tryParse(json['last_workout_date'] as String)
+          : (json['streak_last_workout'] != null
+              ? DateTime.tryParse(json['streak_last_workout'] as String)
+              : null),
+      streakFreezes: json['streak_freezes_available'] as int? ?? json['streak_freezes'] as int? ?? 2,
       totalWorkouts: json['total_workouts'] as int? ?? 0,
       totalVolumeLifted: (json['total_volume_lifted'] as num?)?.toDouble() ?? 0.0,
       createdAt: DateTime.parse(json['created_at'] as String),
@@ -152,6 +154,9 @@ class UserModel extends Equatable {
     }
     return email.substring(0, 2).toUpperCase();
   }
+
+  /// Alias for streakCurrent for consistency
+  int get currentStreak => streakCurrent;
 
   /// Copy with new values
   UserModel copyWith({

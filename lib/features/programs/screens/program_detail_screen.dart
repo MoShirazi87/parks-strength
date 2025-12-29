@@ -1,205 +1,316 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/constants/app_spacing.dart';
-import '../../../core/router/app_router.dart';
+import '../../../data/providers/program_provider.dart';
 import '../../../shared/widgets/app_button.dart';
 import '../../../shared/widgets/app_card.dart';
 import '../../../shared/widgets/selection_chip.dart';
 
-/// Program detail screen
-class ProgramDetailScreen extends StatelessWidget {
+/// Program detail screen with real data
+class ProgramDetailScreen extends ConsumerStatefulWidget {
   final String programId;
 
   const ProgramDetailScreen({super.key, required this.programId});
 
   @override
+  ConsumerState<ProgramDetailScreen> createState() => _ProgramDetailScreenState();
+}
+
+class _ProgramDetailScreenState extends ConsumerState<ProgramDetailScreen> {
+  bool _isEnrolling = false;
+
+  Future<void> _startProgram() async {
+    setState(() => _isEnrolling = true);
+    
+    try {
+      final programRepo = ProgramRepository();
+      
+      // First, get first workout of the program (even before enrolling)
+      final firstWorkoutId = await programRepo.getFirstWorkoutId(widget.programId);
+      
+      // Enroll user in program
+      final enrolled = await programRepo.enrollInProgram(widget.programId);
+      
+      if (!enrolled) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Could not enroll. Check your connection and try again.'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+        // Still try to navigate to workout even if enrollment fails
+        if (firstWorkoutId != null && mounted) {
+          context.push('/workout/$firstWorkoutId');
+          return;
+        }
+        return;
+      }
+      
+      if (mounted) {
+        if (firstWorkoutId != null) {
+          // Navigate to the first workout
+          context.push('/workout/$firstWorkoutId');
+        } else {
+          // No workouts yet - start demo workout
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Program enrolled! Starting demo workout.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          // Navigate to demo workout with the program's first workout pattern
+          context.push('/workout/demo-${widget.programId}/active');
+        }
+      }
+    } catch (e) {
+      print('Start program error: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString().split(':').last.trim()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isEnrolling = false);
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final programAsync = ref.watch(programProvider(widget.programId));
+    
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: CustomScrollView(
-        slivers: [
-          // Hero header
-          SliverAppBar(
-            expandedHeight: 300,
-            pinned: true,
-            backgroundColor: AppColors.background,
-            leading: IconButton(
-              icon: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.3),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.arrow_back),
-              ),
-              onPressed: () => context.pop(),
-            ),
-            flexibleSpace: FlexibleSpaceBar(
-              background: Stack(
-                fit: StackFit.expand,
-                children: [
-                  // Background gradient
-                  Container(
+      body: programAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('Error: $e')),
+        data: (program) {
+          if (program == null) {
+            return const Center(child: Text('Program not found'));
+          }
+          
+          // Parse accent color
+          Color accentColor = AppColors.programTitan;
+          if (program.accentColor != null) {
+            try {
+              accentColor = Color(int.parse(program.accentColor!.replaceFirst('#', '0xFF')));
+            } catch (_) {}
+          }
+          
+          return CustomScrollView(
+            slivers: [
+              // Hero header
+              SliverAppBar(
+                expandedHeight: 300,
+                pinned: true,
+                backgroundColor: AppColors.background,
+                leading: IconButton(
+                  icon: Container(
+                    padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          AppColors.programTitan.withOpacity(0.6),
-                          AppColors.background,
-                        ],
-                      ),
+                      color: Colors.black.withOpacity(0.3),
+                      shape: BoxShape.circle,
                     ),
+                    child: const Icon(Icons.arrow_back),
                   ),
-                  // Content
-                  Positioned(
-                    bottom: 20,
-                    left: 20,
-                    right: 20,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Program badge
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.programTitan.withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 8,
-                                height: 8,
-                                decoration: const BoxDecoration(
-                                  color: AppColors.programTitan,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              AppSpacing.horizontalSM,
-                              Text(
-                                'FUNCTIONAL',
-                                style: AppTypography.caption.copyWith(
-                                  color: AppColors.programTitan,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                  onPressed: () => context.pop(),
+                ),
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      // Background gradient
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              accentColor.withOpacity(0.6),
+                              AppColors.background,
                             ],
                           ),
                         ),
-                        AppSpacing.verticalMD,
-                        Text(
-                          'Foundation\nStrength',
-                          style: AppTypography.displaySmall,
+                      ),
+                      // Content
+                      Positioned(
+                        bottom: 20,
+                        left: 20,
+                        right: 20,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Program badge
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: accentColor.withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 8,
+                                    height: 8,
+                                    decoration: BoxDecoration(
+                                      color: accentColor,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  AppSpacing.horizontalSM,
+                                  Text(
+                                    program.difficulty.toUpperCase(),
+                                    style: AppTypography.caption.copyWith(
+                                      color: accentColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            AppSpacing.verticalMD,
+                            Text(
+                              program.name,
+                              style: AppTypography.displaySmall,
+                            ),
+                            AppSpacing.verticalSM,
+                            Text(
+                              'Coach Brian Parks',
+                              style: AppTypography.bodyMedium.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
                         ),
-                        AppSpacing.verticalSM,
-                        Text(
-                          'Coach Brian Parks',
-                          style: AppTypography.bodyMedium.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Content
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: AppSpacing.screenPadding,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Quick stats
-                  Row(
-                    children: [
-                      _QuickStat(icon: Icons.calendar_today, label: '8 Weeks'),
-                      _QuickStat(icon: Icons.fitness_center, label: '4x/week'),
-                      _QuickStat(icon: Icons.timer, label: '45-60 min'),
-                      _QuickStat(icon: Icons.trending_up, label: 'Intermediate'),
+                      ),
                     ],
                   ),
-                  AppSpacing.verticalLG,
-
-                  // Description
-                  Text('About This Program', style: AppTypography.titleLarge),
-                  AppSpacing.verticalMD,
-                  Text(
-                    'Build a solid foundation of functional strength with this comprehensive 8-week program. Perfect for those ready to take their training seriously and develop lasting strength.',
-                    style: AppTypography.bodyMedium.copyWith(
-                      color: AppColors.textSecondary,
-                      height: 1.6,
-                    ),
-                  ),
-                  AppSpacing.verticalLG,
-
-                  // Equipment section
-                  _CollapsibleSection(
-                    title: 'Equipment',
-                    child: Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        'Barbell', 'Dumbbells', 'Pull-up Bar',
-                        'Bench', 'Cable Machine'
-                      ]
-                          .map((e) => SelectionChip(
-                                label: e,
-                                isSelected: false,
-                              ))
-                          .toList(),
-                    ),
-                  ),
-                  AppSpacing.verticalMD,
-
-                  // Goals section
-                  _CollapsibleSection(
-                    title: 'Goals',
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _GoalItem(text: 'Build foundational strength'),
-                        _GoalItem(text: 'Improve movement quality'),
-                        _GoalItem(text: 'Increase core stability'),
-                        _GoalItem(text: 'Progressive overload mastery'),
-                      ],
-                    ),
-                  ),
-                  AppSpacing.verticalMD,
-
-                  // Week structure
-                  _CollapsibleSection(
-                    title: 'Program Structure',
-                    child: Column(
-                      children: [
-                        _WeekItem(week: 1, title: 'Movement Foundations'),
-                        _WeekItem(week: 2, title: 'Building Strength'),
-                        _WeekItem(week: 3, title: 'Progressive Loading'),
-                        _WeekItem(week: 4, title: 'Deload Week'),
-                        _WeekItem(week: 5, title: 'Strength Phase'),
-                        _WeekItem(week: 6, title: 'Intensity Increase'),
-                        _WeekItem(week: 7, title: 'Peak Week'),
-                        _WeekItem(week: 8, title: 'Testing & Transition'),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 120),
-                ],
+                ),
               ),
-            ),
-          ),
-        ],
+
+              // Content
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: AppSpacing.screenPadding,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Quick stats
+                      Row(
+                        children: [
+                          _QuickStat(
+                            icon: Icons.calendar_today, 
+                            label: '${program.durationWeeks} Weeks',
+                          ),
+                          _QuickStat(
+                            icon: Icons.fitness_center, 
+                            label: '${program.daysPerWeek}x/week',
+                          ),
+                          const _QuickStat(
+                            icon: Icons.timer, 
+                            label: '45-60 min',
+                          ),
+                          _QuickStat(
+                            icon: Icons.trending_up, 
+                            label: program.difficulty.capitalize(),
+                          ),
+                        ],
+                      ),
+                      AppSpacing.verticalLG,
+
+                      // Description
+                      Text('About This Program', style: AppTypography.titleLarge),
+                      AppSpacing.verticalMD,
+                      Text(
+                        program.description ?? program.shortDescription ?? 
+                            'Build functional strength with this comprehensive program.',
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: AppColors.textSecondary,
+                          height: 1.6,
+                        ),
+                      ),
+                      AppSpacing.verticalLG,
+
+                      // Equipment section
+                      _CollapsibleSection(
+                        title: 'Equipment',
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            'Barbell', 'Dumbbells', 'Pull-up Bar',
+                            'Bench', 'Cable Machine'
+                          ]
+                              .map((e) => SelectionChip(
+                                    label: e,
+                                    isSelected: false,
+                                  ))
+                              .toList(),
+                        ),
+                      ),
+                      AppSpacing.verticalMD,
+
+                      // Goals section
+                      if (program.goals.isNotEmpty)
+                        _CollapsibleSection(
+                          title: 'Goals',
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: program.goals
+                                .map((g) => _GoalItem(text: _formatGoal(g)))
+                                .toList(),
+                          ),
+                        )
+                      else
+                        _CollapsibleSection(
+                          title: 'Goals',
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              _GoalItem(text: 'Build foundational strength'),
+                              _GoalItem(text: 'Improve movement quality'),
+                              _GoalItem(text: 'Increase core stability'),
+                              _GoalItem(text: 'Progressive overload mastery'),
+                            ],
+                          ),
+                        ),
+                      AppSpacing.verticalMD,
+
+                      // Week structure
+                      _CollapsibleSection(
+                        title: 'Program Structure',
+                        child: Column(
+                          children: List.generate(
+                            program.durationWeeks,
+                            (i) => _WeekItem(
+                              week: i + 1, 
+                              title: _getWeekTitle(i + 1, program.durationWeeks),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 120),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(20),
@@ -215,12 +326,28 @@ class ProgramDetailScreen extends StatelessWidget {
         child: SafeArea(
           top: false,
           child: AppButton(
-            text: 'Start Program',
-            onPressed: () => context.go(AppRoutes.home),
+            text: _isEnrolling ? 'Starting...' : 'Start Program',
+            onPressed: _isEnrolling ? null : _startProgram,
+            isLoading: _isEnrolling,
           ),
         ),
       ),
     );
+  }
+  
+  String _formatGoal(String goal) {
+    return goal.replaceAll('_', ' ').split(' ').map((w) => 
+      w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1)}' : ''
+    ).join(' ');
+  }
+  
+  String _getWeekTitle(int week, int totalWeeks) {
+    if (week == 1) return 'Movement Foundations';
+    if (week == 2) return 'Building Strength';
+    if (week == totalWeeks ~/ 2) return 'Deload Week';
+    if (week == totalWeeks - 1) return 'Peak Week';
+    if (week == totalWeeks) return 'Testing & Transition';
+    return 'Progressive Loading';
   }
 }
 
@@ -358,3 +485,9 @@ class _WeekItem extends StatelessWidget {
   }
 }
 
+extension StringExtension on String {
+  String capitalize() {
+    if (isEmpty) return this;
+    return '${this[0].toUpperCase()}${substring(1)}';
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2024-12-28T00:00:00Z",
+  "progression_chains": [
+    {
+      "id": "push_up_progression",
+      "name": "Push-up Progression",
+      "movement_pattern": "push_horizontal",
+      "description": "Progress from beginner to advanced push-up variations",
+      "exercises": [
+        {"order": 1, "exercise_slug": "wall-push-up", "difficulty_score": 1, "prerequisite_reps": null},
+        {"order": 2, "exercise_slug": "incline-push-up", "difficulty_score": 2, "prerequisite_reps": 15},
+        {"order": 3, "exercise_slug": "knee-push-up", "difficulty_score": 3, "prerequisite_reps": 15},
+        {"order": 4, "exercise_slug": "push-up", "difficulty_score": 4, "prerequisite_reps": 15},
+        {"order": 5, "exercise_slug": "diamond-push-up", "difficulty_score": 5, "prerequisite_reps": 12},
+        {"order": 6, "exercise_slug": "decline-push-up", "difficulty_score": 6, "prerequisite_reps": 12},
+        {"order": 7, "exercise_slug": "archer-push-up", "difficulty_score": 7, "prerequisite_reps": 10},
+        {"order": 8, "exercise_slug": "one-arm-push-up", "difficulty_score": 9, "prerequisite_reps": 8}
+      ]
+    },
+    {
+      "id": "pull_up_progression",
+      "name": "Pull-up Progression",
+      "movement_pattern": "pull_vertical",
+      "description": "Progress from dead hang to weighted pull-ups",
+      "exercises": [
+        {"order": 1, "exercise_slug": "dead-hang", "difficulty_score": 1, "prerequisite_reps": null},
+        {"order": 2, "exercise_slug": "scapular-pull-up", "difficulty_score": 2, "prerequisite_reps": 10},
+        {"order": 3, "exercise_slug": "negative-pull-up", "difficulty_score": 3, "prerequisite_reps": 8},
+        {"order": 4, "exercise_slug": "band-assisted-pull-up", "difficulty_score": 4, "prerequisite_reps": 10},
+        {"order": 5, "exercise_slug": "chin-up", "difficulty_score": 5, "prerequisite_reps": 5},
+        {"order": 6, "exercise_slug": "pull-up", "difficulty_score": 6, "prerequisite_reps": 5},
+        {"order": 7, "exercise_slug": "wide-grip-pull-up", "difficulty_score": 7, "prerequisite_reps": 8},
+        {"order": 8, "exercise_slug": "weighted-pull-up", "difficulty_score": 8, "prerequisite_reps": 10},
+        {"order": 9, "exercise_slug": "muscle-up", "difficulty_score": 10, "prerequisite_reps": 12}
+      ]
+    },
+    {
+      "id": "squat_progression",
+      "name": "Squat Progression",
+      "movement_pattern": "squat",
+      "description": "Progress from assisted squat to single-leg squat",
+      "exercises": [
+        {"order": 1, "exercise_slug": "assisted-squat", "difficulty_score": 1, "prerequisite_reps": null},
+        {"order": 2, "exercise_slug": "bodyweight-squat", "difficulty_score": 2, "prerequisite_reps": 15},
+        {"order": 3, "exercise_slug": "goblet-squat", "difficulty_score": 3, "prerequisite_reps": 12},
+        {"order": 4, "exercise_slug": "dumbbell-squat", "difficulty_score": 4, "prerequisite_reps": 12},
+        {"order": 5, "exercise_slug": "barbell-back-squat", "difficulty_score": 5, "prerequisite_reps": 10},
+        {"order": 6, "exercise_slug": "barbell-front-squat", "difficulty_score": 6, "prerequisite_reps": 8},
+        {"order": 7, "exercise_slug": "pause-squat", "difficulty_score": 7, "prerequisite_reps": 8},
+        {"order": 8, "exercise_slug": "bulgarian-split-squat", "difficulty_score": 7, "prerequisite_reps": 10},
+        {"order": 9, "exercise_slug": "pistol-squat", "difficulty_score": 9, "prerequisite_reps": 5}
+      ]
+    },
+    {
+      "id": "deadlift_progression",
+      "name": "Deadlift Progression",
+      "movement_pattern": "hinge",
+      "description": "Progress from hip hinge to heavy deadlift variations",
+      "exercises": [
+        {"order": 1, "exercise_slug": "hip-hinge-drill", "difficulty_score": 1, "prerequisite_reps": null},
+        {"order": 2, "exercise_slug": "glute-bridge", "difficulty_score": 2, "prerequisite_reps": 15},
+        {"order": 3, "exercise_slug": "kettlebell-deadlift", "difficulty_score": 3, "prerequisite_reps": 12},
+        {"order": 4, "exercise_slug": "romanian-deadlift", "difficulty_score": 4, "prerequisite_reps": 10},
+        {"order": 5, "exercise_slug": "conventional-deadlift", "difficulty_score": 5, "prerequisite_reps": 8},
+        {"order": 6, "exercise_slug": "sumo-deadlift", "difficulty_score": 5, "prerequisite_reps": 8},
+        {"order": 7, "exercise_slug": "single-leg-rdl", "difficulty_score": 6, "prerequisite_reps": 8},
+        {"order": 8, "exercise_slug": "deficit-deadlift", "difficulty_score": 7, "prerequisite_reps": 6},
+        {"order": 9, "exercise_slug": "trap-bar-deadlift", "difficulty_score": 5, "prerequisite_reps": 8}
+      ]
+    },
+    {
+      "id": "bench_press_progression",
+      "name": "Bench Press Progression",
+      "movement_pattern": "push_horizontal",
+      "description": "Progress from machine to barbell bench press",
+      "exercises": [
+        {"order": 1, "exercise_slug": "chest-press-machine", "difficulty_score": 1, "prerequisite_reps": null},
+        {"order": 2, "exercise_slug": "dumbbell-floor-press", "difficulty_score": 2, "prerequisite_reps": 12},
+        {"order": 3, "exercise_slug": "dumbbell-bench-press", "difficulty_score": 3, "prerequisite_reps": 12},
+        {"order": 4, "exercise_slug": "barbell-bench-press", "difficulty_score": 5, "prerequisite_reps": 10},
+        {"order": 5, "exercise_slug": "incline-barbell-bench-press", "difficulty_score": 5, "prerequisite_reps": 8},
+        {"order": 6, "exercise_slug": "decline-barbell-bench-press", "difficulty_score": 5, "prerequisite_reps": 8},
+        {"order": 7, "exercise_slug": "close-grip-bench-press", "difficulty_score": 5, "prerequisite_reps": 8},
+        {"order": 8, "exercise_slug": "pause-bench-press", "difficulty_score": 6, "prerequisite_reps": 6}
+      ]
+    },
+    {
+      "id": "overhead_press_progression",
+      "name": "Overhead Press Progression",
+      "movement_pattern": "push_vertical",
+      "description": "Progress from seated to standing overhead press",
+      "exercises": [
+        {"order": 1, "exercise_slug": "seated-dumbbell-shoulder-press", "difficulty_score": 2, "prerequisite_reps": null},
+        {"order": 2, "exercise_slug": "standing-dumbbell-shoulder-press", "difficulty_score": 3, "prerequisite_reps": 12},
+        {"order": 3, "exercise_slug": "arnold-press", "difficulty_score": 4, "prerequisite_reps": 10},
+        {"order": 4, "exercise_slug": "barbell-overhead-press", "difficulty_score": 5, "prerequisite_reps": 8},
+        {"order": 5, "exercise_slug": "push-press", "difficulty_score": 5, "prerequisite_reps": 8},
+        {"order": 6, "exercise_slug": "behind-the-neck-press", "difficulty_score": 6, "prerequisite_reps": 8},
+        {"order": 7, "exercise_slug": "z-press", "difficulty_score": 7, "prerequisite_reps": 6}
+      ]
+    },
+    {
+      "id": "row_progression",
+      "name": "Row Progression",
+      "movement_pattern": "pull_horizontal",
+      "description": "Progress from machine to bent over row",
+      "exercises": [
+        {"order": 1, "exercise_slug": "seated-cable-row", "difficulty_score": 2, "prerequisite_reps": null},
+        {"order": 2, "exercise_slug": "chest-supported-row", "difficulty_score": 3, "prerequisite_reps": 12},
+        {"order": 3, "exercise_slug": "single-arm-dumbbell-row", "difficulty_score": 4, "prerequisite_reps": 10},
+        {"order": 4, "exercise_slug": "barbell-bent-over-row", "difficulty_score": 5, "prerequisite_reps": 10},
+        {"order": 5, "exercise_slug": "t-bar-row", "difficulty_score": 5, "prerequisite_reps": 10},
+        {"order": 6, "exercise_slug": "pendlay-row", "difficulty_score": 6, "prerequisite_reps": 8},
+        {"order": 7, "exercise_slug": "meadows-row", "difficulty_score": 6, "prerequisite_reps": 8},
+        {"order": 8, "exercise_slug": "seal-row", "difficulty_score": 6, "prerequisite_reps": 8}
+      ]
+    },
+    {
+      "id": "dip_progression",
+      "name": "Dip Progression",
+      "movement_pattern": "push_horizontal",
+      "description": "Progress from assisted to weighted dips",
+      "exercises": [
+        {"order": 1, "exercise_slug": "bench-dip", "difficulty_score": 2, "prerequisite_reps": null},
+        {"order": 2, "exercise_slug": "assisted-dip", "difficulty_score": 3, "prerequisite_reps": 12},
+        {"order": 3, "exercise_slug": "negative-dip", "difficulty_score": 4, "prerequisite_reps": 8},
+        {"order": 4, "exercise_slug": "parallel-bar-dip", "difficulty_score": 5, "prerequisite_reps": 8},
+        {"order": 5, "exercise_slug": "ring-dip", "difficulty_score": 7, "prerequisite_reps": 8},
+        {"order": 6, "exercise_slug": "weighted-dip", "difficulty_score": 8, "prerequisite_reps": 10}
+      ]
+    },
+    {
+      "id": "lunge_progression",
+      "name": "Lunge Progression",
+      "movement_pattern": "lunge",
+      "description": "Progress from static split squat to advanced lunges",
+      "exercises": [
+        {"order": 1, "exercise_slug": "split-squat", "difficulty_score": 2, "prerequisite_reps": null},
+        {"order": 2, "exercise_slug": "reverse-lunge", "difficulty_score": 3, "prerequisite_reps": 12},
+        {"order": 3, "exercise_slug": "forward-lunge", "difficulty_score": 3, "prerequisite_reps": 12},
+        {"order": 4, "exercise_slug": "walking-lunge", "difficulty_score": 4, "prerequisite_reps": 10},
+        {"order": 5, "exercise_slug": "lateral-lunge", "difficulty_score": 4, "prerequisite_reps": 10},
+        {"order": 6, "exercise_slug": "bulgarian-split-squat", "difficulty_score": 6, "prerequisite_reps": 8},
+        {"order": 7, "exercise_slug": "deficit-bulgarian-split-squat", "difficulty_score": 7, "prerequisite_reps": 8},
+        {"order": 8, "exercise_slug": "jumping-lunge", "difficulty_score": 7, "prerequisite_reps": 10}
+      ]
+    },
+    {
+      "id": "hip_thrust_progression",
+      "name": "Hip Thrust Progression",
+      "movement_pattern": "hinge",
+      "description": "Progress from glute bridge to heavy hip thrusts",
+      "exercises": [
+        {"order": 1, "exercise_slug": "glute-bridge", "difficulty_score": 1, "prerequisite_reps": null},
+        {"order": 2, "exercise_slug": "single-leg-glute-bridge", "difficulty_score": 3, "prerequisite_reps": 15},
+        {"order": 3, "exercise_slug": "hip-thrust", "difficulty_score": 3, "prerequisite_reps": 15},
+        {"order": 4, "exercise_slug": "barbell-hip-thrust", "difficulty_score": 4, "prerequisite_reps": 12},
+        {"order": 5, "exercise_slug": "banded-hip-thrust", "difficulty_score": 5, "prerequisite_reps": 12},
+        {"order": 6, "exercise_slug": "single-leg-hip-thrust", "difficulty_score": 6, "prerequisite_reps": 10}
+      ]
+    },
+    {
+      "id": "plank_progression",
+      "name": "Plank Progression",
+      "movement_pattern": "core",
+      "description": "Progress from basic plank to advanced core holds",
+      "exercises": [
+        {"order": 1, "exercise_slug": "knee-plank", "difficulty_score": 1, "prerequisite_reps": null},
+        {"order": 2, "exercise_slug": "forearm-plank", "difficulty_score": 2, "prerequisite_reps": 30},
+        {"order": 3, "exercise_slug": "high-plank", "difficulty_score": 3, "prerequisite_reps": 30},
+        {"order": 4, "exercise_slug": "side-plank", "difficulty_score": 4, "prerequisite_reps": 20},
+        {"order": 5, "exercise_slug": "plank-with-arm-reach", "difficulty_score": 5, "prerequisite_reps": 30},
+        {"order": 6, "exercise_slug": "renegade-row-plank", "difficulty_score": 6, "prerequisite_reps": 20},
+        {"order": 7, "exercise_slug": "weighted-plank", "difficulty_score": 7, "prerequisite_reps": 45}
+      ]
+    },
+    {
+      "id": "curl_progression",
+      "name": "Curl Progression",
+      "movement_pattern": "isolation",
+      "description": "Progress through bicep curl variations",
+      "exercises": [
+        {"order": 1, "exercise_slug": "cable-curl", "difficulty_score": 2, "prerequisite_reps": null},
+        {"order": 2, "exercise_slug": "dumbbell-curl", "difficulty_score": 3, "prerequisite_reps": 12},
+        {"order": 3, "exercise_slug": "hammer-curl", "difficulty_score": 3, "prerequisite_reps": 12},
+        {"order": 4, "exercise_slug": "barbell-curl", "difficulty_score": 4, "prerequisite_reps": 10},
+        {"order": 5, "exercise_slug": "preacher-curl", "difficulty_score": 4, "prerequisite_reps": 10},
+        {"order": 6, "exercise_slug": "incline-dumbbell-curl", "difficulty_score": 5, "prerequisite_reps": 10},
+        {"order": 7, "exercise_slug": "concentration-curl", "difficulty_score": 4, "prerequisite_reps": 10}
+      ]
+    }
+  ],
+  "total_chains": 12
+}
+

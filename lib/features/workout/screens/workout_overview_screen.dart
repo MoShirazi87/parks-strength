@@ -1,174 +1,216 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../data/providers/workout_provider.dart';
 import '../../../shared/widgets/app_button.dart';
 import '../../../shared/widgets/app_card.dart';
 
-/// Workout overview before starting
-class WorkoutOverviewScreen extends StatelessWidget {
+/// Workout overview before starting - connected to real data
+class WorkoutOverviewScreen extends ConsumerWidget {
   final String workoutId;
 
   const WorkoutOverviewScreen({super.key, required this.workoutId});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final workoutAsync = ref.watch(workoutProvider(workoutId));
+    
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            Padding(
-              padding: AppSpacing.screenHorizontalPadding,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    onTap: () => context.pop(),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.arrow_back),
-                        AppSpacing.horizontalSM,
-                        Text('Go Back', style: AppTypography.bodyMedium),
-                      ],
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit_outlined),
-                        onPressed: () {},
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.info_outline),
-                        onPressed: () {},
-                      ),
-                    ],
-                  ),
-                ],
+      body: workoutAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+              AppSpacing.verticalMD,
+              Text('Error loading workout', style: AppTypography.bodyLarge),
+              AppSpacing.verticalSM,
+              Text('$e', style: AppTypography.caption),
+              AppSpacing.verticalLG,
+              ElevatedButton(
+                onPressed: () => context.pop(),
+                child: const Text('Go Back'),
               ),
-            ),
-            AppSpacing.verticalMD,
-
-            // Content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: AppSpacing.screenHorizontalPadding,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Workout title
-                    Text('Chest Day', style: AppTypography.displaySmall),
-                    AppSpacing.verticalSM,
-                    Text(
-                      'Description dolor sit amet, eiusmod consectetur adipiscing elit, sed ...',
-                      style: AppTypography.bodyMedium.copyWith(
-                        color: AppColors.textMuted,
+            ],
+          ),
+        ),
+        data: (workout) {
+          if (workout == null) {
+            return _buildDemoWorkout(context);
+          }
+          
+          // Group sections by type
+          final warmupSection = workout.sections?.firstWhere(
+            (s) => s.sectionType == 'warmup',
+            orElse: () => workout.sections!.first,
+          );
+          final trainingSection = workout.sections?.firstWhere(
+            (s) => s.sectionType == 'training',
+            orElse: () => workout.sections!.first,
+          );
+          final cooldownSection = workout.sections?.where(
+            (s) => s.sectionType == 'cooldown' || s.sectionType == 'stretch',
+          ).firstOrNull;
+          
+          return SafeArea(
+            child: Column(
+              children: [
+                // Header
+                Padding(
+                  padding: AppSpacing.screenHorizontalPadding,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () => context.pop(),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.arrow_back),
+                            AppSpacing.horizontalSM,
+                            Text('Go Back', style: AppTypography.bodyMedium),
+                          ],
+                        ),
                       ),
-                    ),
-                    AppSpacing.verticalLG,
-
-                    // Quick add buttons
-                    SizedBox(
-                      height: 100,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: const [
-                          _QuickAddButton(
-                            icon: Icons.fitness_center,
-                            label: 'Add\nExercise',
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit_outlined),
+                            onPressed: () {},
                           ),
-                          _QuickAddButton(
-                            icon: Icons.directions_run,
-                            label: 'Add\nWarm-up',
-                          ),
-                          _QuickAddButton(
-                            icon: Icons.self_improvement,
-                            label: 'Add\nStretching',
+                          IconButton(
+                            icon: const Icon(Icons.info_outline),
+                            onPressed: () {},
                           ),
                         ],
                       ),
-                    ),
-                    AppSpacing.verticalLG,
+                    ],
+                  ),
+                ),
+                AppSpacing.verticalMD,
 
-                    // Training section
-                    Text('Training', style: AppTypography.titleLarge),
-                    AppSpacing.verticalMD,
-                    _ExerciseItem(letter: 'A', name: 'Butterfly Sit Ups', sets: 2),
-                    _ExerciseItem(letter: 'B', name: 'Bent knee windscreen Wipers', sets: 2),
-                    _ExerciseItem(letter: 'C', name: 'Neck roll from side to side', sets: 2),
-                    _ExerciseItem(letter: 'D', name: 'Cable Mid Chops', sets: 2),
-                    AppSpacing.verticalLG,
-
-                    // Warm-up section
-                    _CollapsibleSection(
-                      title: 'Warm-up',
-                      initiallyExpanded: false,
+                // Content
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: AppSpacing.screenHorizontalPadding,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _TimedExerciseItem(name: 'Bent knee wind...', time: '00:30'),
-                        _TimedExerciseItem(name: 'Pause', time: '00:30'),
-                        _TimedExerciseItem(name: 'Neck roll from side to side', reps: '2x'),
-                        _TimedExerciseItem(name: 'Pause', time: '00:90'),
-                      ],
-                    ),
-                    AppSpacing.verticalMD,
-
-                    // Stretching section
-                    _CollapsibleSection(
-                      title: 'Stretching',
-                      initiallyExpanded: false,
-                      children: [
-                        _TimedExerciseItem(name: 'Cable Mid Chops', reps: '2x'),
-                        _TimedExerciseItem(name: 'Pause', time: '00:30'),
-                        _TimedExerciseItem(name: 'Bent knee windscreen Wip...', time: '00:30'),
-                        _TimedExerciseItem(name: 'Pause', time: '00:30'),
-                      ],
-                    ),
-                    AppSpacing.verticalMD,
-
-                    // Equipment section
-                    _CollapsibleSection(
-                      title: 'Equipment',
-                      initiallyExpanded: false,
-                      children: [
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            _EquipmentChip(label: 'Body bars'),
-                            _EquipmentChip(label: 'Battle ropes'),
-                            _EquipmentChip(label: 'Barbells'),
-                            _EquipmentChip(label: 'Jump ropes'),
-                            _EquipmentChip(label: 'Legs press'),
-                          ],
-                        ),
-                      ],
-                    ),
-                    AppSpacing.verticalMD,
-
-                    // Goals section
-                    _CollapsibleSection(
-                      title: 'Goals',
-                      initiallyExpanded: false,
-                      children: [
+                        // Workout title
+                        Text(workout.name, style: AppTypography.displaySmall),
+                        AppSpacing.verticalSM,
                         Text(
-                          'Build chest strength and improve pressing power.',
+                          workout.description ?? 'Complete this workout with proper form and intensity.',
                           style: AppTypography.bodyMedium.copyWith(
-                            color: AppColors.textSecondary,
+                            color: AppColors.textMuted,
                           ),
                         ),
+                        AppSpacing.verticalSM,
+                        
+                        // Duration and exercise count
+                        Row(
+                          children: [
+                            Icon(Icons.timer_outlined, size: 16, color: AppColors.textSecondary),
+                            AppSpacing.horizontalXS,
+                            Text(
+                              '${workout.estimatedDurationMinutes} min',
+                              style: AppTypography.labelMedium.copyWith(color: AppColors.textSecondary),
+                            ),
+                            AppSpacing.horizontalMD,
+                            Icon(Icons.fitness_center, size: 16, color: AppColors.textSecondary),
+                            AppSpacing.horizontalXS,
+                            Text(
+                              '${workout.allExercises.length} exercises',
+                              style: AppTypography.labelMedium.copyWith(color: AppColors.textSecondary),
+                            ),
+                          ],
+                        ),
+                        AppSpacing.verticalLG,
+
+                        // RAMP Warm-up section
+                        if (warmupSection != null && warmupSection.exercises != null) ...[
+                          _SectionHeader(
+                            title: 'RAMP Warm-up',
+                            subtitle: 'Raise • Activate • Mobilize • Potentiate',
+                            icon: Icons.directions_run,
+                            color: AppColors.streak,
+                          ),
+                          AppSpacing.verticalMD,
+                          ...warmupSection.exercises!.map((e) => _TimedExerciseItem(
+                            name: e.exercise?.name ?? 'Exercise',
+                            time: e.timeSeconds != null ? _formatTime(e.timeSeconds!) : null,
+                            reps: e.reps != null ? '${e.reps}x' : null,
+                          )),
+                          AppSpacing.verticalLG,
+                        ],
+
+                        // Training section
+                        if (trainingSection != null && trainingSection.exercises != null) ...[
+                          _SectionHeader(
+                            title: 'Training',
+                            subtitle: '${trainingSection.exercises!.length} exercises',
+                            icon: Icons.fitness_center,
+                            color: AppColors.primary,
+                          ),
+                          AppSpacing.verticalMD,
+                          ...trainingSection.exercises!.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final exercise = entry.value;
+                            final letter = String.fromCharCode(65 + index); // A, B, C...
+                            return _ExerciseItem(
+                              letter: exercise.letterDesignation ?? letter,
+                              name: exercise.exercise?.name ?? 'Exercise',
+                              sets: exercise.sets ?? 3,
+                              reps: exercise.reps ?? 10,
+                              restSeconds: exercise.restSeconds ?? 90,
+                            );
+                          }),
+                          AppSpacing.verticalLG,
+                        ],
+
+                        // Cooldown section
+                        if (cooldownSection != null) ...[
+                          _CollapsibleSection(
+                            title: 'Cooldown / Stretching',
+                            initiallyExpanded: false,
+                            children: cooldownSection.exercises?.map((e) => 
+                              _TimedExerciseItem(
+                                name: e.exercise?.name ?? 'Stretch',
+                                time: e.timeSeconds != null ? _formatTime(e.timeSeconds!) : '30s',
+                              )
+                            ).toList() ?? [],
+                          ),
+                          AppSpacing.verticalMD,
+                        ],
+
+                        // Equipment section
+                        _CollapsibleSection(
+                          title: 'Equipment',
+                          initiallyExpanded: false,
+                          children: [
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: _getRequiredEquipment(workout.allExercises)
+                                  .map((e) => _EquipmentChip(label: e))
+                                  .toList(),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 120),
                       ],
                     ),
-                    const SizedBox(height: 120),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(20),
@@ -190,43 +232,137 @@ class WorkoutOverviewScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-class _QuickAddButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const _QuickAddButton({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 100,
-      margin: const EdgeInsets.only(right: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.circular(16),
-      ),
+  
+  Widget _buildDemoWorkout(BuildContext context) {
+    // Fallback demo workout when no data
+    return SafeArea(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Icon(icon, color: Colors.white, size: 24),
-              const Icon(Icons.add, color: Colors.white, size: 20),
-            ],
+          Padding(
+            padding: AppSpacing.screenHorizontalPadding,
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: () => context.pop(),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.arrow_back),
+                      AppSpacing.horizontalSM,
+                      Text('Go Back', style: AppTypography.bodyMedium),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-          const Spacer(),
-          Text(
-            label,
-            style: AppTypography.labelSmall.copyWith(
-              color: Colors.white,
+          AppSpacing.verticalMD,
+          Expanded(
+            child: SingleChildScrollView(
+              padding: AppSpacing.screenHorizontalPadding,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Push Day', style: AppTypography.displaySmall),
+                  AppSpacing.verticalSM,
+                  Text(
+                    'Upper body pushing focus: chest, shoulders, triceps',
+                    style: AppTypography.bodyMedium.copyWith(color: AppColors.textMuted),
+                  ),
+                  AppSpacing.verticalLG,
+                  
+                  _SectionHeader(
+                    title: 'RAMP Warm-up',
+                    subtitle: 'Raise • Activate • Mobilize • Potentiate',
+                    icon: Icons.directions_run,
+                    color: AppColors.streak,
+                  ),
+                  AppSpacing.verticalMD,
+                  const _TimedExerciseItem(name: 'Arm Circles', time: '30s'),
+                  const _TimedExerciseItem(name: 'Shoulder Dislocates', time: '30s'),
+                  const _TimedExerciseItem(name: 'Band Pull-Aparts', reps: '15x'),
+                  const _TimedExerciseItem(name: 'Push-up Plus', reps: '10x'),
+                  AppSpacing.verticalLG,
+                  
+                  _SectionHeader(
+                    title: 'Training',
+                    subtitle: '5 exercises',
+                    icon: Icons.fitness_center,
+                    color: AppColors.primary,
+                  ),
+                  AppSpacing.verticalMD,
+                  const _ExerciseItem(letter: 'A', name: 'Barbell Bench Press', sets: 4, reps: 8, restSeconds: 120),
+                  const _ExerciseItem(letter: 'B', name: 'Overhead Press', sets: 3, reps: 10, restSeconds: 90),
+                  const _ExerciseItem(letter: 'C', name: 'Incline Dumbbell Press', sets: 3, reps: 12, restSeconds: 90),
+                  const _ExerciseItem(letter: 'D', name: 'Dips', sets: 3, reps: 10, restSeconds: 90),
+                  const _ExerciseItem(letter: 'E', name: 'Tricep Pushdowns', sets: 3, reps: 15, restSeconds: 60),
+                  const SizedBox(height: 120),
+                ],
+              ),
             ),
           ),
         ],
       ),
+    );
+  }
+  
+  String _formatTime(int seconds) {
+    if (seconds >= 60) {
+      return '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}';
+    }
+    return '${seconds}s';
+  }
+  
+  List<String> _getRequiredEquipment(List exercises) {
+    final equipment = <String>{};
+    for (final e in exercises) {
+      if (e.exercise?.equipmentRequired != null) {
+        equipment.addAll(List<String>.from(e.exercise!.equipmentRequired!));
+      }
+    }
+    if (equipment.isEmpty) {
+      return ['Barbell', 'Dumbbells', 'Bench'];
+    }
+    return equipment.toList();
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
+
+  const _SectionHeader({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: color, size: 20),
+        ),
+        AppSpacing.horizontalMD,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: AppTypography.titleLarge),
+            Text(
+              subtitle,
+              style: AppTypography.caption.copyWith(color: AppColors.textMuted),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -235,52 +371,127 @@ class _ExerciseItem extends StatelessWidget {
   final String letter;
   final String name;
   final int sets;
+  final int reps;
+  final int restSeconds;
 
   const _ExerciseItem({
     required this.letter,
     required this.name,
     required this.sets,
+    required this.reps,
+    required this.restSeconds,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              letter,
-              style: AppTypography.labelMedium.copyWith(
-                color: AppColors.textMuted,
-              ),
-            ),
-            Text(
-              '${sets}x Set',
-              style: AppTypography.labelMedium.copyWith(
-                color: AppColors.primary,
-              ),
-            ),
-          ],
-        ),
-        AppSpacing.verticalSM,
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(name, style: AppTypography.bodyMedium),
-              const Icon(Icons.drag_handle, color: AppColors.textMuted),
+              Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: Text(
+                    letter,
+                    style: AppTypography.labelMedium.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              Text(
+                '$sets × $reps  •  ${restSeconds}s rest',
+                style: AppTypography.labelSmall.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
             ],
           ),
-        ),
-        AppSpacing.verticalMD,
-      ],
+          AppSpacing.verticalSM,
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.border.withOpacity(0.3)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(name, style: AppTypography.bodyMedium),
+                ),
+                const Icon(Icons.chevron_right, color: AppColors.textMuted, size: 20),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TimedExerciseItem extends StatelessWidget {
+  final String name;
+  final String? time;
+  final String? reps;
+
+  const _TimedExerciseItem({
+    required this.name,
+    this.time,
+    this.reps,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              name,
+              style: AppTypography.bodyMedium,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (time != null)
+                  Icon(Icons.schedule, size: 14, color: AppColors.secondary),
+                if (reps != null)
+                  Icon(Icons.repeat, size: 14, color: AppColors.secondary),
+                AppSpacing.horizontalXS,
+                Text(
+                  time ?? reps ?? '',
+                  style: AppTypography.labelMedium.copyWith(
+                    color: AppColors.secondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -342,52 +553,6 @@ class _CollapsibleSectionState extends State<_CollapsibleSection> {
   }
 }
 
-class _TimedExerciseItem extends StatelessWidget {
-  final String name;
-  final String? time;
-  final String? reps;
-
-  const _TimedExerciseItem({
-    required this.name,
-    this.time,
-    this.reps,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Text(
-              name,
-              style: AppTypography.bodyMedium,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          Row(
-            children: [
-              if (time != null)
-                Icon(Icons.schedule, size: 14, color: AppColors.primary),
-              if (reps != null)
-                Icon(Icons.repeat, size: 14, color: AppColors.primary),
-              AppSpacing.horizontalXS,
-              Text(
-                time ?? reps ?? '',
-                style: AppTypography.labelMedium.copyWith(
-                  color: AppColors.primary,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _EquipmentChip extends StatelessWidget {
   final String label;
 
@@ -408,4 +573,3 @@ class _EquipmentChip extends StatelessWidget {
     );
   }
 }
-

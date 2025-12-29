@@ -17,6 +17,9 @@ import '../../features/programs/screens/program_detail_screen.dart';
 import '../../features/workout/screens/workout_overview_screen.dart';
 import '../../features/workout/screens/active_workout_screen.dart';
 import '../../features/workout/screens/workout_completion_screen.dart';
+import '../../features/workout/screens/quick_workout_screen.dart';
+import '../../features/workout/screens/active_quick_workout_screen.dart';
+import '../../data/services/workout_generator.dart';
 import '../../features/progress/screens/progress_dashboard_screen.dart';
 import '../../features/progress/screens/personal_records_screen.dart';
 import '../../features/progress/screens/workout_history_screen.dart';
@@ -54,6 +57,7 @@ class AppRoutes {
   static const String workout = '/workout/:id';
   static const String activeWorkout = '/workout/:id/active';
   static const String workoutComplete = '/workout-complete';
+  static const String quickWorkout = '/quick-workout/:type';
 
   // Progress routes
   static const String progress = '/progress';
@@ -75,6 +79,7 @@ final _shellNavigatorKey = GlobalKey<NavigatorState>();
 // Router provider
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
+  final currentUser = ref.watch(currentUserProvider);
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
@@ -83,24 +88,57 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
     // Redirect logic based on auth state
     redirect: (context, state) {
-      final isLoggedIn = authState.valueOrNull != null;
       final isOnAuthRoute = state.matchedLocation == AppRoutes.welcome ||
           state.matchedLocation == AppRoutes.signIn ||
           state.matchedLocation == AppRoutes.signUp ||
           state.matchedLocation == AppRoutes.forgotPassword;
       final isOnSplash = state.matchedLocation == AppRoutes.splash;
+      final isOnOnboarding = state.matchedLocation == AppRoutes.onboarding ||
+          state.matchedLocation == AppRoutes.programRecommendation;
 
       // Don't redirect from splash - it handles its own navigation
       if (isOnSplash) return null;
+
+      // Don't redirect during loading states - let splash handle initial nav
+      final isAuthLoading = authState.isLoading;
+      final isUserLoading = currentUser.isLoading;
+      if (isAuthLoading || isUserLoading) {
+        return null;
+      }
+
+      final isLoggedIn = authState.valueOrNull != null;
 
       // If not logged in and not on auth route, go to welcome
       if (!isLoggedIn && !isOnAuthRoute) {
         return AppRoutes.welcome;
       }
 
-      // If logged in and on auth route, go to home
-      if (isLoggedIn && isOnAuthRoute) {
-        return AppRoutes.home;
+      // If logged in
+      if (isLoggedIn) {
+        // Check if user profile is loaded
+        final user = currentUser.valueOrNull;
+        
+        // If user profile is not loaded yet, don't redirect
+        // (splash screen or normal flow will handle it)
+        if (user == null) {
+          // If on auth route and logged in but no profile, go to onboarding
+          if (isOnAuthRoute) {
+            return AppRoutes.onboarding;
+          }
+          return null;
+        }
+        
+        final hasCompletedOnboarding = user.onboardingCompleted;
+        
+        // If on auth route, redirect based on onboarding status
+        if (isOnAuthRoute) {
+          return hasCompletedOnboarding ? AppRoutes.home : AppRoutes.onboarding;
+        }
+        
+        // If not on onboarding route and hasn't completed onboarding
+        if (!isOnOnboarding && !hasCompletedOnboarding) {
+          return AppRoutes.onboarding;
+        }
       }
 
       return null;
@@ -200,6 +238,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final workoutLogId = state.extra as String?;
           return WorkoutCompletionScreen(workoutLogId: workoutLogId ?? '');
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.quickWorkout,
+        builder: (context, state) {
+          final workoutType = state.pathParameters['type'] ?? 'fullbody';
+          return QuickWorkoutScreen(workoutType: workoutType);
+        },
+      ),
+      GoRoute(
+        path: '/active-quick-workout',
+        builder: (context, state) {
+          final workout = state.extra as GeneratedWorkout;
+          return ActiveQuickWorkoutScreen(workout: workout);
         },
       ),
 

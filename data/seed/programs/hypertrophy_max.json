@@ -1,0 +1,171 @@
+{
+  "id": "prog_hypertrophy_max",
+  "name": "Hypertrophy Max",
+  "slug": "hypertrophy-max",
+  "description": "Maximum muscle growth with high volume training. 6-week program designed for intermediate lifters looking to add size.",
+  "duration_weeks": 6,
+  "days_per_week": 5,
+  "difficulty": "intermediate",
+  "goal": "build_muscle",
+  "equipment_required": ["barbell", "dumbbell", "cable", "machine", "bench"],
+  "location": "gym",
+  "image_url": "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=800",
+  "progression_type": "volume",
+  "weeks": [
+    {
+      "week_number": 1,
+      "theme": "Volume Foundation",
+      "intensity": "RPE 7",
+      "focus": "High volume, moderate weight",
+      "workouts": [
+        {
+          "day": 1,
+          "name": "Chest & Triceps",
+          "type": "push",
+          "estimated_minutes": 60,
+          "exercises": [
+            {"exercise_slug": "barbell-bench-press", "sets": 4, "reps": "8-10", "rest_seconds": 120},
+            {"exercise_slug": "incline-dumbbell-press", "sets": 4, "reps": "10-12", "rest_seconds": 90},
+            {"exercise_slug": "cable-crossover", "sets": 4, "reps": "12-15", "rest_seconds": 60},
+            {"exercise_slug": "dumbbell-fly", "sets": 3, "reps": "12-15", "rest_seconds": 60},
+            {"exercise_slug": "tricep-pushdown", "sets": 4, "reps": "10-12", "rest_seconds": 60},
+            {"exercise_slug": "skull-crusher", "sets": 3, "reps": "10-12", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 2,
+          "name": "Back & Biceps",
+          "type": "pull",
+          "estimated_minutes": 60,
+          "exercises": [
+            {"exercise_slug": "barbell-row", "sets": 4, "reps": "8-10", "rest_seconds": 120},
+            {"exercise_slug": "lat-pulldown", "sets": 4, "reps": "10-12", "rest_seconds": 90},
+            {"exercise_slug": "seated-cable-row", "sets": 4, "reps": "10-12", "rest_seconds": 90},
+            {"exercise_slug": "single-arm-dumbbell-row", "sets": 3, "reps": "10-12", "rest_seconds": 60},
+            {"exercise_slug": "barbell-curl", "sets": 4, "reps": "10-12", "rest_seconds": 60},
+            {"exercise_slug": "hammer-curl", "sets": 3, "reps": "10-12", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 3,
+          "name": "Legs",
+          "type": "legs",
+          "estimated_minutes": 65,
+          "exercises": [
+            {"exercise_slug": "barbell-back-squat", "sets": 4, "reps": "8-10", "rest_seconds": 180},
+            {"exercise_slug": "leg-press", "sets": 4, "reps": "10-12", "rest_seconds": 120},
+            {"exercise_slug": "romanian-deadlift", "sets": 4, "reps": "10-12", "rest_seconds": 120},
+            {"exercise_slug": "leg-extension", "sets": 4, "reps": "12-15", "rest_seconds": 60},
+            {"exercise_slug": "leg-curl", "sets": 4, "reps": "12-15", "rest_seconds": 60},
+            {"exercise_slug": "standing-calf-raise", "sets": 4, "reps": "15-20", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 4,
+          "name": "Shoulders",
+          "type": "push",
+          "estimated_minutes": 50,
+          "exercises": [
+            {"exercise_slug": "overhead-press", "sets": 4, "reps": "8-10", "rest_seconds": 120},
+            {"exercise_slug": "lateral-raise", "sets": 5, "reps": "12-15", "rest_seconds": 60},
+            {"exercise_slug": "rear-delt-fly", "sets": 4, "reps": "12-15", "rest_seconds": 60},
+            {"exercise_slug": "face-pull", "sets": 4, "reps": "15-20", "rest_seconds": 60},
+            {"exercise_slug": "shrugs", "sets": 4, "reps": "10-12", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 5,
+          "name": "Arms",
+          "type": "arms",
+          "estimated_minutes": 45,
+          "exercises": [
+            {"exercise_slug": "barbell-curl", "sets": 4, "reps": "8-10", "rest_seconds": 90},
+            {"exercise_slug": "close-grip-bench-press", "sets": 4, "reps": "8-10", "rest_seconds": 90},
+            {"exercise_slug": "preacher-curl", "sets": 3, "reps": "10-12", "rest_seconds": 60},
+            {"exercise_slug": "tricep-pushdown", "sets": 3, "reps": "10-12", "rest_seconds": 60},
+            {"exercise_slug": "concentration-curl", "sets": 3, "reps": "12-15", "rest_seconds": 60},
+            {"exercise_slug": "overhead-tricep-extension", "sets": 3, "reps": "12-15", "rest_seconds": 60}
+          ]
+        }
+      ]
+    },
+    {
+      "week_number": 4,
+      "theme": "Intensity Ramp",
+      "intensity": "RPE 8",
+      "focus": "Progressive overload with maintained volume",
+      "workouts": [
+        {
+          "day": 1,
+          "name": "Chest & Triceps",
+          "type": "push",
+          "estimated_minutes": 65,
+          "exercises": [
+            {"exercise_slug": "barbell-bench-press", "sets": 5, "reps": "6-8", "rest_seconds": 150},
+            {"exercise_slug": "incline-barbell-bench-press", "sets": 4, "reps": "8-10", "rest_seconds": 120},
+            {"exercise_slug": "dumbbell-fly", "sets": 4, "reps": "10-12", "rest_seconds": 60},
+            {"exercise_slug": "cable-crossover", "sets": 4, "reps": "12-15", "rest_seconds": 60},
+            {"exercise_slug": "skull-crusher", "sets": 4, "reps": "8-10", "rest_seconds": 90},
+            {"exercise_slug": "tricep-dip", "sets": 3, "reps": "max", "rest_seconds": 90}
+          ]
+        },
+        {
+          "day": 2,
+          "name": "Back & Biceps",
+          "type": "pull",
+          "estimated_minutes": 65,
+          "exercises": [
+            {"exercise_slug": "deadlift", "sets": 4, "reps": "5-6", "rest_seconds": 180},
+            {"exercise_slug": "pull-up", "sets": 4, "reps": "max", "rest_seconds": 120},
+            {"exercise_slug": "barbell-row", "sets": 4, "reps": "8-10", "rest_seconds": 120},
+            {"exercise_slug": "seated-cable-row", "sets": 4, "reps": "10-12", "rest_seconds": 90},
+            {"exercise_slug": "barbell-curl", "sets": 4, "reps": "8-10", "rest_seconds": 60},
+            {"exercise_slug": "incline-dumbbell-curl", "sets": 3, "reps": "10-12", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 3,
+          "name": "Legs",
+          "type": "legs",
+          "estimated_minutes": 70,
+          "exercises": [
+            {"exercise_slug": "barbell-back-squat", "sets": 5, "reps": "6-8", "rest_seconds": 180},
+            {"exercise_slug": "leg-press", "sets": 4, "reps": "8-10", "rest_seconds": 120},
+            {"exercise_slug": "romanian-deadlift", "sets": 4, "reps": "8-10", "rest_seconds": 120},
+            {"exercise_slug": "walking-lunge", "sets": 3, "reps": "12 each", "rest_seconds": 90},
+            {"exercise_slug": "leg-curl", "sets": 4, "reps": "10-12", "rest_seconds": 60},
+            {"exercise_slug": "seated-calf-raise", "sets": 4, "reps": "12-15", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 4,
+          "name": "Shoulders",
+          "type": "push",
+          "estimated_minutes": 55,
+          "exercises": [
+            {"exercise_slug": "overhead-press", "sets": 5, "reps": "6-8", "rest_seconds": 150},
+            {"exercise_slug": "arnold-press", "sets": 4, "reps": "8-10", "rest_seconds": 90},
+            {"exercise_slug": "lateral-raise", "sets": 5, "reps": "12-15", "rest_seconds": 45},
+            {"exercise_slug": "rear-delt-fly", "sets": 4, "reps": "12-15", "rest_seconds": 60},
+            {"exercise_slug": "upright-row", "sets": 3, "reps": "10-12", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 5,
+          "name": "Arms",
+          "type": "arms",
+          "estimated_minutes": 50,
+          "exercises": [
+            {"exercise_slug": "barbell-curl", "sets": 4, "reps": "6-8", "rest_seconds": 90},
+            {"exercise_slug": "close-grip-bench-press", "sets": 4, "reps": "6-8", "rest_seconds": 120},
+            {"exercise_slug": "preacher-curl", "sets": 4, "reps": "8-10", "rest_seconds": 60},
+            {"exercise_slug": "tricep-pushdown", "sets": 4, "reps": "8-10", "rest_seconds": 60},
+            {"exercise_slug": "hammer-curl", "sets": 3, "reps": "10-12", "rest_seconds": 60},
+            {"exercise_slug": "overhead-tricep-extension", "sets": 3, "reps": "10-12", "rest_seconds": 60}
+          ]
+        }
+      ]
+    }
+  ]
+}
+

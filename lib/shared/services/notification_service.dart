@@ -33,7 +33,7 @@ class NotificationService {
     if (data == null) return;
 
     final type = data['type'] as String?;
-    final payload = data['payload'] as Map<String, dynamic>?;
+    // final payload = data['payload'] as Map<String, dynamic>?; // TODO: Use payload for deep linking
 
     // Handle different notification types
     switch (type) {

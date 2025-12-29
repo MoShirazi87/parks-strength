@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../features/auth/providers/auth_provider.dart';
 import '../constants/app_colors.dart';
-import '../constants/app_typography.dart';
 import 'app_router.dart';
 
 /// Splash screen shown on app launch
@@ -57,39 +56,56 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     if (!mounted) return;
 
-    final authState = ref.read(authStateProvider);
-
-    authState.when(
-      data: (user) {
-        if (user != null) {
-          // Check if user has completed onboarding
-          ref.read(hasCompletedOnboardingProvider).when(
-                data: (completed) {
-                  if (completed) {
-                    context.go(AppRoutes.home);
-                  } else {
-                    context.go(AppRoutes.onboarding);
-                  }
-                },
-                loading: () => context.go(AppRoutes.onboarding),
-                error: (_, __) => context.go(AppRoutes.onboarding),
-              );
-        } else {
-          context.go(AppRoutes.welcome);
-        }
-      },
-      loading: () {
-        // Wait a bit more and try again
-        Future.delayed(const Duration(milliseconds: 500), () {
-          if (mounted) {
-            context.go(AppRoutes.welcome);
-          }
-        });
-      },
-      error: (_, __) {
+    // Check if there's actually a logged in user session
+    final supabaseUser = Supabase.instance.client.auth.currentUser;
+    
+    print('Splash: Checking auth state...');
+    print('Splash: Current user = ${supabaseUser?.id ?? "null"}');
+    
+    if (supabaseUser == null) {
+      // No user logged in - go to welcome screen for login/signup
+      print('Splash: No user session, going to welcome');
+      if (mounted) {
         context.go(AppRoutes.welcome);
-      },
-    );
+      }
+      return;
+    }
+    
+    // User is logged in - check if profile exists and onboarding status
+    try {
+      final userProfile = await Supabase.instance.client
+          .from('users')
+          .select('id, onboarding_completed')
+          .eq('id', supabaseUser.id)
+          .maybeSingle();
+      
+      if (!mounted) return;
+      
+      print('Splash: User profile = $userProfile');
+      
+      if (userProfile == null) {
+        // User profile doesn't exist - this means they signed up but profile wasn't created
+        // Go to onboarding to create profile
+        print('Splash: No profile found, going to onboarding');
+        context.go(AppRoutes.onboarding);
+        return;
+      }
+      
+      final hasCompleted = userProfile['onboarding_completed'] == true;
+      print('Splash: Onboarding completed = $hasCompleted');
+      
+      if (hasCompleted) {
+        context.go(AppRoutes.home);
+      } else {
+        context.go(AppRoutes.onboarding);
+      }
+    } catch (e) {
+      print('Splash: Error checking profile: $e');
+      // On error, go to welcome screen to let user re-authenticate
+      if (mounted) {
+        context.go(AppRoutes.welcome);
+      }
+    }
   }
 
   @override

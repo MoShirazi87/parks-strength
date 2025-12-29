@@ -1,0 +1,144 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2024-12-28T00:00:00Z",
+  "categories": [
+    {
+      "id": "free_weights",
+      "name": "Free Weights",
+      "description": "Traditional weight training equipment",
+      "items": [
+        {"id": "barbell", "name": "Barbell", "locations": ["gym"], "common": true, "weight_range": "45-405 lbs"},
+        {"id": "ez_bar", "name": "EZ Curl Bar", "locations": ["gym"], "common": true, "weight_range": "25-135 lbs"},
+        {"id": "trap_bar", "name": "Trap Bar (Hex Bar)", "locations": ["gym"], "common": false, "weight_range": "45-500 lbs"},
+        {"id": "safety_squat_bar", "name": "Safety Squat Bar", "locations": ["gym"], "common": false, "weight_range": "65-405 lbs"},
+        {"id": "dumbbell", "name": "Dumbbells", "locations": ["gym", "home"], "common": true, "weight_range": "5-150 lbs"},
+        {"id": "kettlebell", "name": "Kettlebells", "locations": ["gym", "home"], "common": true, "weight_range": "8-106 lbs"},
+        {"id": "weight_plates", "name": "Weight Plates", "locations": ["gym", "home"], "common": true, "weight_range": "2.5-45 lbs"},
+        {"id": "medicine_ball", "name": "Medicine Ball", "locations": ["gym", "home"], "common": true, "weight_range": "4-30 lbs"},
+        {"id": "slam_ball", "name": "Slam Ball", "locations": ["gym", "home"], "common": false, "weight_range": "10-50 lbs"},
+        {"id": "sandbag", "name": "Sandbag", "locations": ["gym", "home", "outdoor"], "common": false, "weight_range": "25-200 lbs"},
+        {"id": "landmine", "name": "Landmine Attachment", "locations": ["gym"], "common": false, "weight_range": "45-225 lbs"}
+      ]
+    },
+    {
+      "id": "machines",
+      "name": "Machines",
+      "description": "Resistance machines and cable systems",
+      "items": [
+        {"id": "cable_machine", "name": "Cable Machine", "locations": ["gym"], "common": true, "muscle_groups": ["all"]},
+        {"id": "lat_pulldown", "name": "Lat Pulldown Machine", "locations": ["gym"], "common": true, "muscle_groups": ["back", "biceps"]},
+        {"id": "seated_row", "name": "Seated Row Machine", "locations": ["gym"], "common": true, "muscle_groups": ["back", "biceps"]},
+        {"id": "chest_press", "name": "Chest Press Machine", "locations": ["gym"], "common": true, "muscle_groups": ["chest", "triceps"]},
+        {"id": "pec_deck", "name": "Pec Deck / Fly Machine", "locations": ["gym"], "common": true, "muscle_groups": ["chest"]},
+        {"id": "shoulder_press_machine", "name": "Shoulder Press Machine", "locations": ["gym"], "common": true, "muscle_groups": ["shoulders"]},
+        {"id": "leg_press", "name": "Leg Press Machine", "locations": ["gym"], "common": true, "muscle_groups": ["quadriceps", "glutes", "hamstrings"]},
+        {"id": "hack_squat", "name": "Hack Squat Machine", "locations": ["gym"], "common": true, "muscle_groups": ["quadriceps", "glutes"]},
+        {"id": "leg_extension", "name": "Leg Extension Machine", "locations": ["gym"], "common": true, "muscle_groups": ["quadriceps"]},
+        {"id": "leg_curl", "name": "Leg Curl Machine", "locations": ["gym"], "common": true, "muscle_groups": ["hamstrings"]},
+        {"id": "hip_abductor", "name": "Hip Abductor Machine", "locations": ["gym"], "common": true, "muscle_groups": ["glutes", "abductors"]},
+        {"id": "hip_adductor", "name": "Hip Adductor Machine", "locations": ["gym"], "common": true, "muscle_groups": ["adductors"]},
+        {"id": "glute_machine", "name": "Glute Kickback Machine", "locations": ["gym"], "common": false, "muscle_groups": ["glutes"]},
+        {"id": "calf_raise_machine", "name": "Calf Raise Machine", "locations": ["gym"], "common": true, "muscle_groups": ["calves"]},
+        {"id": "smith_machine", "name": "Smith Machine", "locations": ["gym"], "common": true, "muscle_groups": ["all"]},
+        {"id": "assisted_pullup", "name": "Assisted Pull-up Machine", "locations": ["gym"], "common": true, "muscle_groups": ["back", "biceps"]},
+        {"id": "preacher_curl", "name": "Preacher Curl Machine", "locations": ["gym"], "common": true, "muscle_groups": ["biceps"]},
+        {"id": "tricep_extension_machine", "name": "Tricep Extension Machine", "locations": ["gym"], "common": false, "muscle_groups": ["triceps"]},
+        {"id": "ab_machine", "name": "Ab Crunch Machine", "locations": ["gym"], "common": true, "muscle_groups": ["abs"]},
+        {"id": "back_extension_machine", "name": "Back Extension Machine", "locations": ["gym"], "common": true, "muscle_groups": ["lower_back", "glutes"]}
+      ]
+    },
+    {
+      "id": "benches_racks",
+      "name": "Benches & Racks",
+      "description": "Supportive equipment for free weight exercises",
+      "items": [
+        {"id": "flat_bench", "name": "Flat Bench", "locations": ["gym", "home"], "common": true},
+        {"id": "adjustable_bench", "name": "Adjustable Bench", "locations": ["gym", "home"], "common": true},
+        {"id": "incline_bench", "name": "Incline Bench", "locations": ["gym"], "common": true},
+        {"id": "decline_bench", "name": "Decline Bench", "locations": ["gym"], "common": true},
+        {"id": "preacher_bench", "name": "Preacher Curl Bench", "locations": ["gym"], "common": true},
+        {"id": "squat_rack", "name": "Squat Rack / Power Rack", "locations": ["gym", "home"], "common": true},
+        {"id": "half_rack", "name": "Half Rack", "locations": ["gym", "home"], "common": false},
+        {"id": "bench_press_station", "name": "Bench Press Station", "locations": ["gym"], "common": true},
+        {"id": "dumbbell_rack", "name": "Dumbbell Rack", "locations": ["gym", "home"], "common": true}
+      ]
+    },
+    {
+      "id": "bodyweight",
+      "name": "Bodyweight Equipment",
+      "description": "Equipment for bodyweight training",
+      "items": [
+        {"id": "pull_up_bar", "name": "Pull-up Bar", "locations": ["gym", "home", "outdoor"], "common": true},
+        {"id": "dip_station", "name": "Dip Station / Parallel Bars", "locations": ["gym", "home", "outdoor"], "common": true},
+        {"id": "gymnastics_rings", "name": "Gymnastics Rings", "locations": ["gym", "home", "outdoor"], "common": false},
+        {"id": "suspension_trainer", "name": "Suspension Trainer (TRX)", "locations": ["gym", "home", "outdoor", "travel"], "common": true},
+        {"id": "parallettes", "name": "Parallettes", "locations": ["gym", "home"], "common": false},
+        {"id": "ab_wheel", "name": "Ab Wheel", "locations": ["gym", "home"], "common": true},
+        {"id": "roman_chair", "name": "Roman Chair / GHD", "locations": ["gym"], "common": true},
+        {"id": "plyo_box", "name": "Plyo Box", "locations": ["gym", "home"], "common": true},
+        {"id": "step_platform", "name": "Step Platform", "locations": ["gym", "home"], "common": true}
+      ]
+    },
+    {
+      "id": "resistance_bands",
+      "name": "Resistance Bands",
+      "description": "Elastic resistance equipment",
+      "items": [
+        {"id": "loop_bands", "name": "Loop Resistance Bands", "locations": ["gym", "home", "outdoor", "travel"], "common": true, "resistance_levels": ["light", "medium", "heavy", "extra_heavy"]},
+        {"id": "tube_bands", "name": "Tube Resistance Bands", "locations": ["gym", "home", "outdoor", "travel"], "common": true},
+        {"id": "mini_bands", "name": "Mini Bands (Hip Circle)", "locations": ["gym", "home", "outdoor", "travel"], "common": true},
+        {"id": "pull_up_assist_band", "name": "Pull-up Assist Bands", "locations": ["gym", "home"], "common": true},
+        {"id": "therapy_bands", "name": "Therapy Bands", "locations": ["gym", "home", "travel"], "common": true}
+      ]
+    },
+    {
+      "id": "cardio",
+      "name": "Cardio Equipment",
+      "description": "Cardiovascular training machines",
+      "items": [
+        {"id": "treadmill", "name": "Treadmill", "locations": ["gym", "home"], "common": true},
+        {"id": "elliptical", "name": "Elliptical Trainer", "locations": ["gym", "home"], "common": true},
+        {"id": "stationary_bike", "name": "Stationary Bike", "locations": ["gym", "home"], "common": true},
+        {"id": "spin_bike", "name": "Spin Bike", "locations": ["gym", "home"], "common": true},
+        {"id": "rowing_machine", "name": "Rowing Machine (Erg)", "locations": ["gym", "home"], "common": true},
+        {"id": "ski_erg", "name": "Ski Erg", "locations": ["gym"], "common": false},
+        {"id": "assault_bike", "name": "Assault Bike / Air Bike", "locations": ["gym"], "common": false},
+        {"id": "stair_climber", "name": "Stair Climber", "locations": ["gym"], "common": true},
+        {"id": "jacob_ladder", "name": "Jacob's Ladder", "locations": ["gym"], "common": false},
+        {"id": "jump_rope", "name": "Jump Rope", "locations": ["gym", "home", "outdoor", "travel"], "common": true},
+        {"id": "battle_ropes", "name": "Battle Ropes", "locations": ["gym"], "common": false}
+      ]
+    },
+    {
+      "id": "accessories",
+      "name": "Accessories",
+      "description": "Supportive training accessories",
+      "items": [
+        {"id": "foam_roller", "name": "Foam Roller", "locations": ["gym", "home", "travel"], "common": true},
+        {"id": "lacrosse_ball", "name": "Lacrosse Ball / Massage Ball", "locations": ["gym", "home", "travel"], "common": true},
+        {"id": "yoga_mat", "name": "Yoga Mat", "locations": ["gym", "home", "outdoor", "travel"], "common": true},
+        {"id": "ankle_weights", "name": "Ankle Weights", "locations": ["gym", "home"], "common": false},
+        {"id": "weighted_vest", "name": "Weighted Vest", "locations": ["gym", "home", "outdoor"], "common": false},
+        {"id": "dip_belt", "name": "Dip Belt", "locations": ["gym"], "common": true},
+        {"id": "lifting_straps", "name": "Lifting Straps", "locations": ["gym", "home"], "common": true},
+        {"id": "wrist_wraps", "name": "Wrist Wraps", "locations": ["gym", "home"], "common": true},
+        {"id": "knee_sleeves", "name": "Knee Sleeves", "locations": ["gym", "home"], "common": true},
+        {"id": "lifting_belt", "name": "Lifting Belt", "locations": ["gym", "home"], "common": true},
+        {"id": "fat_gripz", "name": "Fat Gripz", "locations": ["gym", "home"], "common": false},
+        {"id": "bosu_ball", "name": "BOSU Ball", "locations": ["gym", "home"], "common": false},
+        {"id": "stability_ball", "name": "Stability Ball", "locations": ["gym", "home"], "common": true},
+        {"id": "balance_board", "name": "Balance Board", "locations": ["gym", "home"], "common": false}
+      ]
+    },
+    {
+      "id": "no_equipment",
+      "name": "No Equipment",
+      "description": "Bodyweight exercises requiring no equipment",
+      "items": [
+        {"id": "bodyweight", "name": "Bodyweight Only", "locations": ["gym", "home", "outdoor", "travel"], "common": true}
+      ]
+    }
+  ],
+  "total_items": 85
+}
+

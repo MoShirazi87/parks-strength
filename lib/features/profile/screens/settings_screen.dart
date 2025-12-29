@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/router/app_router.dart';
 import '../../../shared/widgets/app_card.dart';
+import '../../auth/providers/auth_provider.dart';
 
 /// Settings screen
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -179,12 +182,61 @@ class SettingsScreen extends StatelessWidget {
             ),
             AppSpacing.verticalXL,
 
+            // Sign Out Button
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () async {
+                  final confirmed = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      backgroundColor: AppColors.surface,
+                      title: const Text('Sign Out'),
+                      content: const Text('Are you sure you want to sign out?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: Text(
+                            'Sign Out',
+                            style: TextStyle(color: AppColors.error),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                  
+                  if (confirmed == true) {
+                    final authService = ref.read(authServiceProvider);
+                    await authService.signOut();
+                    if (context.mounted) {
+                      context.go(AppRoutes.welcome);
+                    }
+                  }
+                },
+                icon: const Icon(Icons.logout, color: AppColors.error),
+                label: Text(
+                  'Sign Out',
+                  style: AppTypography.bodyMedium.copyWith(color: AppColors.error),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: AppColors.error.withOpacity(0.5)),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+              ),
+            ),
+            AppSpacing.verticalXL,
+
             Center(
               child: Text(
                 'Parks Strength v1.0.0',
                 style: AppTypography.caption,
               ),
             ),
+            AppSpacing.verticalLG,
           ],
         ),
       ),

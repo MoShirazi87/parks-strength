@@ -122,7 +122,7 @@ class AuthService {
   }
   
   /// Update user profile
-  Future<void> updateProfile({
+  Future<bool> updateProfile({
     String? firstName,
     String? lastName,
     String? displayName,
@@ -130,15 +130,31 @@ class AuthService {
     String? experienceLevel,
     List<String>? goals,
     List<String>? exercisePreferences,
+    List<String>? exerciseTypes,
     List<String>? injuries,
+    String? injuryNotes,
     String? trainingLocation,
+    List<String>? equipment,
     List<String>? preferredDays,
     String? preferredTime,
     String? reminderTime,
+    int? trainingDaysPerWeek,
+    String? workoutReminderTime,
     bool? onboardingCompleted,
+    bool? notificationWorkoutReminders,
+    bool? notificationRestDayCheckins,
+    bool? notificationCoachUpdates,
+    bool? notificationWeeklyProgress,
+    bool? receiveWorkoutReminders,
+    bool? receiveRestDayCheckins,
+    bool? receiveCoachUpdates,
+    bool? receiveWeeklyProgressReports,
   }) async {
     final userId = supabase.auth.currentUser?.id;
-    if (userId == null) return;
+    if (userId == null) {
+      print('Error: No user logged in for profile update');
+      return false;
+    }
     
     final updates = <String, dynamic>{
       'updated_at': DateTime.now().toIso8601String(),
@@ -151,17 +167,143 @@ class AuthService {
     if (experienceLevel != null) updates['experience_level'] = experienceLevel;
     if (goals != null) updates['goals'] = goals;
     if (exercisePreferences != null) updates['exercise_preferences'] = exercisePreferences;
+    if (exerciseTypes != null) updates['exercise_types'] = exerciseTypes;
     if (injuries != null) updates['injuries'] = injuries;
+    if (injuryNotes != null) updates['injury_notes'] = injuryNotes;
     if (trainingLocation != null) updates['training_location'] = trainingLocation;
     if (preferredDays != null) updates['preferred_days'] = preferredDays;
     if (preferredTime != null) updates['preferred_time'] = preferredTime;
     if (reminderTime != null) updates['reminder_time'] = reminderTime;
+    if (trainingDaysPerWeek != null) updates['training_days_per_week'] = trainingDaysPerWeek;
+    if (workoutReminderTime != null) updates['workout_reminder_time'] = workoutReminderTime;
     if (onboardingCompleted != null) updates['onboarding_completed'] = onboardingCompleted;
+    if (notificationWorkoutReminders != null) updates['notification_workout_reminders'] = notificationWorkoutReminders;
+    if (notificationRestDayCheckins != null) updates['notification_rest_day_checkins'] = notificationRestDayCheckins;
+    if (notificationCoachUpdates != null) updates['notification_coach_updates'] = notificationCoachUpdates;
+    if (notificationWeeklyProgress != null) updates['notification_weekly_progress'] = notificationWeeklyProgress;
+    if (receiveWorkoutReminders != null) updates['notification_workout_reminders'] = receiveWorkoutReminders;
+    if (receiveRestDayCheckins != null) updates['notification_rest_day_checkins'] = receiveRestDayCheckins;
+    if (receiveCoachUpdates != null) updates['notification_coach_updates'] = receiveCoachUpdates;
+    if (receiveWeeklyProgressReports != null) updates['notification_weekly_progress'] = receiveWeeklyProgressReports;
     
-    await supabase
-        .from('users')
-        .update(updates)
-        .eq('id', userId);
+    try {
+      // First check if user profile exists
+      final existingUser = await supabase
+          .from('users')
+          .select('id')
+          .eq('id', userId)
+          .maybeSingle();
+      
+      if (existingUser != null) {
+        // User exists, update
+        await supabase
+            .from('users')
+            .update(updates)
+            .eq('id', userId);
+        print('Profile updated successfully: ${updates.keys.join(', ')}');
+      } else {
+        // User doesn't exist, create with upsert
+        final email = supabase.auth.currentUser?.email ?? '';
+        final insertData = {
+          'id': userId,
+          'email': email,
+          'created_at': DateTime.now().toIso8601String(),
+          ...updates,
+        };
+        
+        await supabase
+            .from('users')
+            .upsert(insertData, onConflict: 'id');
+        print('Profile created successfully: ${updates.keys.join(', ')}');
+      }
+      
+      // Save user equipment if provided
+      if (equipment != null && equipment.isNotEmpty) {
+        await _saveUserEquipment(userId, equipment);
+      }
+      
+      return true;
+    } catch (e) {
+      print('Error updating profile: $e');
+      // Try upsert as fallback
+      try {
+        final email = supabase.auth.currentUser?.email ?? '';
+        final insertData = {
+          'id': userId,
+          'email': email,
+          'created_at': DateTime.now().toIso8601String(),
+          ...updates,
+        };
+        
+        await supabase
+            .from('users')
+            .upsert(insertData, onConflict: 'id');
+        print('Profile upserted successfully (fallback): ${updates.keys.join(', ')}');
+        
+        // Save user equipment if provided
+        if (equipment != null && equipment.isNotEmpty) {
+          await _saveUserEquipment(userId, equipment);
+        }
+        
+        return true;
+      } catch (e2) {
+        print('Error upserting profile: $e2');
+        return false;
+      }
+    }
+  }
+  
+  /// Save user equipment preferences
+  Future<void> _saveUserEquipment(String userId, List<String> equipmentNames) async {
+    try {
+      // First, delete existing user equipment
+      await supabase
+          .from('user_equipment')
+          .delete()
+          .eq('user_id', userId);
+      
+      // Get equipment IDs by name
+      final equipmentLower = equipmentNames.map((e) => e.toLowerCase()).toList();
+      final equipmentResponse = await supabase
+          .from('equipment')
+          .select('id, name')
+          .inFilter('name', equipmentLower);
+      
+      // Build list of user_equipment records
+      final records = <Map<String, dynamic>>[];
+      for (final eq in (equipmentResponse as List)) {
+        records.add({
+          'user_id': userId,
+          'equipment_id': eq['id'],
+        });
+      }
+      
+      // Also try matching by checking if name is contained
+      if (records.isEmpty) {
+        // Fallback - get all equipment and match by partial name
+        final allEquipment = await supabase.from('equipment').select('id, name');
+        for (final eq in (allEquipment as List)) {
+          final eqName = (eq['name'] as String).toLowerCase();
+          for (final userEq in equipmentLower) {
+            if (eqName.contains(userEq) || userEq.contains(eqName)) {
+              records.add({
+                'user_id': userId,
+                'equipment_id': eq['id'],
+              });
+              break;
+            }
+          }
+        }
+      }
+      
+      // Insert new user equipment
+      if (records.isNotEmpty) {
+        await supabase.from('user_equipment').insert(records);
+        print('Saved ${records.length} equipment items for user');
+      }
+    } catch (e) {
+      print('Error saving user equipment: $e');
+    }
   }
   
   /// Complete onboarding

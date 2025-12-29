@@ -1,4 +1,6 @@
 /// Barrel file for all shared widgets
+library;
+
 export 'app_button.dart';
 export 'app_text_field.dart';
 export 'app_card.dart';

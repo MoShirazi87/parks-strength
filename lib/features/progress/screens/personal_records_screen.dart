@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../data/providers/progress_provider.dart';
 import '../../../shared/widgets/app_card.dart';
 
-/// Personal records screen
-class PersonalRecordsScreen extends StatelessWidget {
+/// Personal records screen with real data
+class PersonalRecordsScreen extends ConsumerWidget {
   const PersonalRecordsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final prsAsync = ref.watch(personalRecordsProvider);
+    
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -22,113 +27,79 @@ class PersonalRecordsScreen extends StatelessWidget {
           onPressed: () => context.pop(),
         ),
       ),
-      body: ListView(
-        padding: AppSpacing.screenPadding,
-        children: const [
-          _PRCard(
-            exercise: 'Bench Press',
-            records: {
-              '1RM': '225 lbs',
-              '5RM': '185 lbs',
-              '8RM': '165 lbs',
-            },
-            lastAchieved: 'Dec 20, 2024',
+      body: prsAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+              AppSpacing.verticalMD,
+              Text('Error loading PRs', style: AppTypography.bodyLarge),
+              AppSpacing.verticalSM,
+              Text('$e', style: AppTypography.caption),
+            ],
           ),
-          _PRCard(
-            exercise: 'Squat',
-            records: {
-              '1RM': '315 lbs',
-              '5RM': '265 lbs',
-              '8RM': '225 lbs',
+        ),
+        data: (prs) {
+          if (prs.isEmpty) {
+            return _buildEmptyState();
+          }
+          
+          return RefreshIndicator(
+            onRefresh: () async {
+              ref.invalidate(personalRecordsProvider);
             },
-            lastAchieved: 'Dec 18, 2024',
-          ),
-          _PRCard(
-            exercise: 'Deadlift',
-            records: {
-              '1RM': '365 lbs',
-              '5RM': '315 lbs',
-              '8RM': '275 lbs',
-            },
-            lastAchieved: 'Dec 15, 2024',
-          ),
-          _PRCard(
-            exercise: 'Overhead Press',
-            records: {
-              '1RM': '145 lbs',
-              '5RM': '115 lbs',
-              '8RM': '95 lbs',
-            },
-            lastAchieved: 'Dec 22, 2024',
-          ),
-        ],
+            child: ListView.builder(
+              padding: AppSpacing.screenPadding,
+              itemCount: prs.length,
+              itemBuilder: (context, index) {
+                final pr = prs[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _PRCard(pr: pr),
+                );
+              },
+            ),
+          );
+        },
       ),
     );
   }
-}
 
-class _PRCard extends StatelessWidget {
-  final String exercise;
-  final Map<String, String> records;
-  final String lastAchieved;
-
-  const _PRCard({
-    required this.exercise,
-    required this.records,
-    required this.lastAchieved,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: AppCard(
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: AppSpacing.screenPadding,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.emoji_events,
-                      color: AppColors.secondary,
-                      size: 20,
-                    ),
-                    AppSpacing.horizontalSM,
-                    Text(exercise, style: AppTypography.titleLarge),
-                  ],
-                ),
-                const Icon(Icons.chevron_right, color: AppColors.textMuted),
-              ],
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: AppColors.pr.withAlpha(20),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.emoji_events_outlined,
+                size: 40,
+                color: AppColors.pr,
+              ),
             ),
-            AppSpacing.verticalMD,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: records.entries
-                  .map((e) => Column(
-                        children: [
-                          Text(
-                            e.key,
-                            style: AppTypography.caption,
-                          ),
-                          Text(
-                            e.value,
-                            style: AppTypography.titleMedium.copyWith(
-                              color: AppColors.secondary,
-                            ),
-                          ),
-                        ],
-                      ))
-                  .toList(),
+            AppSpacing.verticalLG,
+            Text(
+              'No Personal Records Yet',
+              style: AppTypography.headlineMedium,
+              textAlign: TextAlign.center,
             ),
             AppSpacing.verticalMD,
             Text(
-              'Last achieved: $lastAchieved',
-              style: AppTypography.caption.copyWith(
-                color: AppColors.textMuted,
+              'Complete workouts to start setting PRs!\nWe track your best lifts automatically.',
+              style: AppTypography.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
               ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -137,3 +108,113 @@ class _PRCard extends StatelessWidget {
   }
 }
 
+class _PRCard extends StatelessWidget {
+  final PersonalRecord pr;
+
+  const _PRCard({required this.pr});
+
+  @override
+  Widget build(BuildContext context) {
+    final dateFormat = DateFormat('MMM d, yyyy');
+    
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header row
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.pr.withAlpha(20),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.emoji_events,
+                  color: AppColors.pr,
+                  size: 24,
+                ),
+              ),
+              AppSpacing.horizontalMD,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      pr.exerciseName,
+                      style: AppTypography.titleMedium,
+                    ),
+                    Text(
+                      dateFormat.format(pr.achievedAt),
+                      style: AppTypography.caption,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          AppSpacing.verticalMD,
+          const Divider(color: AppColors.border),
+          AppSpacing.verticalMD,
+          
+          // Stats row
+          Row(
+            children: [
+              Expanded(
+                child: _StatColumn(
+                  label: 'Weight',
+                  value: '${pr.weight.toStringAsFixed(1)} lbs',
+                ),
+              ),
+              Expanded(
+                child: _StatColumn(
+                  label: 'Reps',
+                  value: pr.reps.toString(),
+                ),
+              ),
+              Expanded(
+                child: _StatColumn(
+                  label: 'Est. 1RM',
+                  value: '${pr.estimated1RM.toStringAsFixed(1)} lbs',
+                  isHighlighted: true,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatColumn extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool isHighlighted;
+
+  const _StatColumn({
+    required this.label,
+    required this.value,
+    this.isHighlighted = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: AppTypography.titleLarge.copyWith(
+            color: isHighlighted ? AppColors.pr : null,
+          ),
+        ),
+        AppSpacing.verticalXS,
+        Text(
+          label,
+          style: AppTypography.caption,
+        ),
+      ],
+    );
+  }
+}

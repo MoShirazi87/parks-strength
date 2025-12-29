@@ -45,31 +45,43 @@ class ProfileScreen extends ConsumerWidget {
               AppSpacing.verticalLG,
 
               // Stats row
-              Row(
-                children: [
-                  Expanded(
-                    child: _StatCard(
-                      value: '12',
-                      label: 'Workouts',
+              user.when(
+                data: (userData) => Row(
+                  children: [
+                    Expanded(
+                      child: _StatCard(
+                        value: '${userData?.totalWorkouts ?? 0}',
+                        label: 'Workouts',
+                      ),
                     ),
-                  ),
-                  AppSpacing.horizontalMD,
-                  Expanded(
-                    child: _StatCard(
-                      value: '7',
-                      label: 'Day Streak',
-                      valueColor: AppColors.streak,
+                    AppSpacing.horizontalMD,
+                    Expanded(
+                      child: _StatCard(
+                        value: '${userData?.streakCurrent ?? 0}',
+                        label: 'Day Streak',
+                        valueColor: AppColors.streak,
+                      ),
                     ),
-                  ),
-                  AppSpacing.horizontalMD,
-                  Expanded(
-                    child: _StatCard(
-                      value: '3',
-                      label: 'PRs',
-                      valueColor: AppColors.secondary,
+                    AppSpacing.horizontalMD,
+                    Expanded(
+                      child: _StatCard(
+                        value: '${userData?.points ?? 0}',
+                        label: 'Points',
+                        valueColor: AppColors.secondary,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+                loading: () => Row(
+                  children: [
+                    Expanded(child: _StatCard(value: '-', label: 'Workouts')),
+                    AppSpacing.horizontalMD,
+                    Expanded(child: _StatCard(value: '-', label: 'Streak')),
+                    AppSpacing.horizontalMD,
+                    Expanded(child: _StatCard(value: '-', label: 'Points')),
+                  ],
+                ),
+                error: (_, __) => const SizedBox.shrink(),
               ),
               AppSpacing.verticalLG,
 

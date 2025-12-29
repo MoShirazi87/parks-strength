@@ -1,0 +1,197 @@
+{
+  "id": "prog_foundation_strength",
+  "name": "Foundation Strength",
+  "slug": "foundation-strength",
+  "description": "Build a solid strength foundation with this 8-week program. Perfect for beginners or those returning to training.",
+  "duration_weeks": 8,
+  "days_per_week": 4,
+  "difficulty": "beginner",
+  "goal": "build_strength",
+  "equipment_required": ["barbell", "dumbbell", "cable", "bench"],
+  "location": "gym",
+  "image_url": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800",
+  "progression_type": "linear",
+  "weeks": [
+    {
+      "week_number": 1,
+      "theme": "Movement Mastery",
+      "intensity": "RPE 6-7",
+      "focus": "Learn proper form and movement patterns",
+      "workouts": [
+        {
+          "day": 1,
+          "name": "Push A",
+          "type": "push",
+          "estimated_minutes": 45,
+          "exercises": [
+            {"exercise_slug": "push-up", "sets": 3, "reps": "10-12", "rest_seconds": 60, "notes": "Focus on form"},
+            {"exercise_slug": "dumbbell-bench-press", "sets": 3, "reps": "10-12", "rest_seconds": 90},
+            {"exercise_slug": "dumbbell-shoulder-press", "sets": 3, "reps": "10-12", "rest_seconds": 90},
+            {"exercise_slug": "lateral-raise", "sets": 3, "reps": "12-15", "rest_seconds": 60},
+            {"exercise_slug": "tricep-pushdown", "sets": 3, "reps": "12-15", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 2,
+          "name": "Pull A",
+          "type": "pull",
+          "estimated_minutes": 45,
+          "exercises": [
+            {"exercise_slug": "lat-pulldown", "sets": 3, "reps": "10-12", "rest_seconds": 90},
+            {"exercise_slug": "seated-cable-row", "sets": 3, "reps": "10-12", "rest_seconds": 90},
+            {"exercise_slug": "face-pull", "sets": 3, "reps": "15-20", "rest_seconds": 60},
+            {"exercise_slug": "dumbbell-curl", "sets": 3, "reps": "12-15", "rest_seconds": 60},
+            {"exercise_slug": "hammer-curl", "sets": 3, "reps": "12-15", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 3,
+          "name": "Legs A",
+          "type": "legs",
+          "estimated_minutes": 50,
+          "exercises": [
+            {"exercise_slug": "goblet-squat", "sets": 3, "reps": "10-12", "rest_seconds": 90},
+            {"exercise_slug": "leg-press", "sets": 3, "reps": "12-15", "rest_seconds": 90},
+            {"exercise_slug": "leg-curl", "sets": 3, "reps": "12-15", "rest_seconds": 60},
+            {"exercise_slug": "leg-extension", "sets": 3, "reps": "12-15", "rest_seconds": 60},
+            {"exercise_slug": "standing-calf-raise", "sets": 3, "reps": "15-20", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 4,
+          "name": "Upper Body",
+          "type": "upper",
+          "estimated_minutes": 45,
+          "exercises": [
+            {"exercise_slug": "incline-dumbbell-press", "sets": 3, "reps": "10-12", "rest_seconds": 90},
+            {"exercise_slug": "single-arm-dumbbell-row", "sets": 3, "reps": "10-12", "rest_seconds": 90},
+            {"exercise_slug": "lateral-raise", "sets": 3, "reps": "12-15", "rest_seconds": 60},
+            {"exercise_slug": "barbell-curl", "sets": 3, "reps": "10-12", "rest_seconds": 60},
+            {"exercise_slug": "overhead-tricep-extension", "sets": 3, "reps": "12-15", "rest_seconds": 60}
+          ]
+        }
+      ]
+    },
+    {
+      "week_number": 4,
+      "theme": "Progressive Overload",
+      "intensity": "RPE 7-8",
+      "focus": "Increase weight while maintaining form",
+      "workouts": [
+        {
+          "day": 1,
+          "name": "Push A",
+          "type": "push",
+          "estimated_minutes": 50,
+          "exercises": [
+            {"exercise_slug": "barbell-bench-press", "sets": 4, "reps": "6-8", "rest_seconds": 120, "notes": "Progressed from dumbbell"},
+            {"exercise_slug": "incline-dumbbell-press", "sets": 3, "reps": "8-10", "rest_seconds": 90},
+            {"exercise_slug": "overhead-press", "sets": 3, "reps": "8-10", "rest_seconds": 90},
+            {"exercise_slug": "lateral-raise", "sets": 4, "reps": "12-15", "rest_seconds": 60},
+            {"exercise_slug": "skull-crusher", "sets": 3, "reps": "10-12", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 2,
+          "name": "Pull A",
+          "type": "pull",
+          "estimated_minutes": 50,
+          "exercises": [
+            {"exercise_slug": "barbell-row", "sets": 4, "reps": "6-8", "rest_seconds": 120, "notes": "Progressed to barbell"},
+            {"exercise_slug": "lat-pulldown", "sets": 3, "reps": "8-10", "rest_seconds": 90},
+            {"exercise_slug": "seated-cable-row", "sets": 3, "reps": "8-10", "rest_seconds": 90},
+            {"exercise_slug": "face-pull", "sets": 3, "reps": "15-20", "rest_seconds": 60},
+            {"exercise_slug": "barbell-curl", "sets": 4, "reps": "8-10", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 3,
+          "name": "Legs A",
+          "type": "legs",
+          "estimated_minutes": 55,
+          "exercises": [
+            {"exercise_slug": "barbell-back-squat", "sets": 4, "reps": "6-8", "rest_seconds": 180, "notes": "Progressed from goblet"},
+            {"exercise_slug": "romanian-deadlift", "sets": 3, "reps": "8-10", "rest_seconds": 120},
+            {"exercise_slug": "leg-press", "sets": 3, "reps": "10-12", "rest_seconds": 90},
+            {"exercise_slug": "leg-curl", "sets": 3, "reps": "10-12", "rest_seconds": 60},
+            {"exercise_slug": "standing-calf-raise", "sets": 4, "reps": "12-15", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 4,
+          "name": "Upper Body",
+          "type": "upper",
+          "estimated_minutes": 50,
+          "exercises": [
+            {"exercise_slug": "incline-barbell-bench-press", "sets": 3, "reps": "8-10", "rest_seconds": 120},
+            {"exercise_slug": "chin-up", "sets": 3, "reps": "6-8", "rest_seconds": 120, "notes": "Assisted if needed"},
+            {"exercise_slug": "dumbbell-shoulder-press", "sets": 3, "reps": "8-10", "rest_seconds": 90},
+            {"exercise_slug": "barbell-curl", "sets": 3, "reps": "8-10", "rest_seconds": 60},
+            {"exercise_slug": "tricep-pushdown", "sets": 3, "reps": "10-12", "rest_seconds": 60}
+          ]
+        }
+      ]
+    },
+    {
+      "week_number": 8,
+      "theme": "Peak Strength",
+      "intensity": "RPE 8-9",
+      "focus": "Test your new strength",
+      "workouts": [
+        {
+          "day": 1,
+          "name": "Push A",
+          "type": "push",
+          "estimated_minutes": 55,
+          "exercises": [
+            {"exercise_slug": "barbell-bench-press", "sets": 5, "reps": "3-5", "rest_seconds": 180, "notes": "Test strength"},
+            {"exercise_slug": "incline-barbell-bench-press", "sets": 4, "reps": "6-8", "rest_seconds": 120},
+            {"exercise_slug": "overhead-press", "sets": 4, "reps": "6-8", "rest_seconds": 120},
+            {"exercise_slug": "chest-dip", "sets": 3, "reps": "8-10", "rest_seconds": 90},
+            {"exercise_slug": "lateral-raise", "sets": 4, "reps": "12-15", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 2,
+          "name": "Pull A",
+          "type": "pull",
+          "estimated_minutes": 55,
+          "exercises": [
+            {"exercise_slug": "deadlift", "sets": 5, "reps": "3-5", "rest_seconds": 180, "notes": "Test strength"},
+            {"exercise_slug": "barbell-row", "sets": 4, "reps": "6-8", "rest_seconds": 120},
+            {"exercise_slug": "pull-up", "sets": 4, "reps": "max", "rest_seconds": 120},
+            {"exercise_slug": "face-pull", "sets": 3, "reps": "15-20", "rest_seconds": 60},
+            {"exercise_slug": "barbell-curl", "sets": 4, "reps": "8-10", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 3,
+          "name": "Legs A",
+          "type": "legs",
+          "estimated_minutes": 60,
+          "exercises": [
+            {"exercise_slug": "barbell-back-squat", "sets": 5, "reps": "3-5", "rest_seconds": 180, "notes": "Test strength"},
+            {"exercise_slug": "romanian-deadlift", "sets": 4, "reps": "6-8", "rest_seconds": 120},
+            {"exercise_slug": "bulgarian-split-squat", "sets": 3, "reps": "8-10", "rest_seconds": 90},
+            {"exercise_slug": "leg-curl", "sets": 4, "reps": "10-12", "rest_seconds": 60},
+            {"exercise_slug": "standing-calf-raise", "sets": 4, "reps": "12-15", "rest_seconds": 60}
+          ]
+        },
+        {
+          "day": 4,
+          "name": "Upper Body",
+          "type": "upper",
+          "estimated_minutes": 55,
+          "exercises": [
+            {"exercise_slug": "close-grip-bench-press", "sets": 4, "reps": "6-8", "rest_seconds": 120},
+            {"exercise_slug": "weighted-pull-up", "sets": 4, "reps": "5-8", "rest_seconds": 120, "notes": "Add weight if possible"},
+            {"exercise_slug": "arnold-press", "sets": 3, "reps": "8-10", "rest_seconds": 90},
+            {"exercise_slug": "barbell-curl", "sets": 4, "reps": "8-10", "rest_seconds": 60},
+            {"exercise_slug": "skull-crusher", "sets": 4, "reps": "8-10", "rest_seconds": 60}
+          ]
+        }
+      ]
+    }
+  ]
+}
+
