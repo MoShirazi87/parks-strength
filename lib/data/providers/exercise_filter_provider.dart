@@ -625,3 +625,28 @@ class ExerciseRepository {
         .toList();
   }
 }
+
+/// Provider for all published exercises
+final exercisesProvider = FutureProvider<List<ExerciseModel>>((ref) async {
+  final response = await supabase
+      .from('exercises')
+      .select('*')
+      .eq('is_published', true)
+      .order('name', ascending: true);
+
+  return (response as List)
+      .map((json) => ExerciseModel.fromJson(json))
+      .toList();
+});
+
+/// Provider for single exercise by ID
+final exerciseProvider = FutureProvider.family<ExerciseModel?, String>((ref, id) async {
+  final response = await supabase
+      .from('exercises')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+  if (response == null) return null;
+  return ExerciseModel.fromJson(response);
+});

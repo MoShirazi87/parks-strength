@@ -253,7 +253,7 @@ class _OnboardingWizardScreenState extends ConsumerState<OnboardingWizardScreen>
                   children: [
                     Text(
                       _currentStep == 7 ? 'Complete Setup' : 'NEXT',
-                      style: AppTypography.button.copyWith(
+                      style: AppTypography.buttonMedium.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
                       ),
@@ -480,7 +480,7 @@ class _OnboardingWizardScreenState extends ConsumerState<OnboardingWizardScreen>
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.primary : AppColors.surfaceLight,
+                color: isSelected ? AppColors.primary : AppColors.surfaceElevated,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(

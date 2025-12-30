@@ -25,6 +25,8 @@ import '../../features/progress/screens/progress_dashboard_screen.dart';
 import '../../features/progress/screens/personal_records_screen.dart';
 import '../../features/progress/screens/workout_history_screen.dart';
 import '../../features/profile/screens/settings_screen.dart';
+import '../../features/exercises/screens/exercise_browser_screen.dart';
+import '../../features/exercises/screens/exercise_detail_screen.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import '../constants/app_colors.dart';
 import 'splash_screen.dart';
@@ -71,6 +73,10 @@ class AppRoutes {
   static const String notificationSettings = '/settings/notifications';
   static const String equipmentSettings = '/settings/equipment';
   static const String subscription = '/settings/subscription';
+
+  // Exercise library routes
+  static const String exercises = '/exercises';
+  static const String exerciseDetail = '/exercises/:id';
 }
 
 // Navigation keys
@@ -262,6 +268,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.settings,
         builder: (context, state) => const SettingsScreen(),
+      ),
+
+      // Exercise library routes
+      GoRoute(
+        path: AppRoutes.exercises,
+        builder: (context, state) => const ExerciseBrowserScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.exerciseDetail,
+        builder: (context, state) {
+          final exerciseId = state.pathParameters['id']!;
+          return ExerciseDetailScreen(exerciseId: exerciseId);
+        },
       ),
     ],
 

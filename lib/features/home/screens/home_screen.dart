@@ -23,12 +23,12 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: AppSpacing.screenPadding,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              AppSpacing.verticalXL,
               // Logo
               Container(
                 width: 100,
@@ -95,10 +95,62 @@ class HomeScreen extends ConsumerWidget {
               ),
               AppSpacing.verticalXXL,
               
+              // Quick Action Buttons
+              Row(
+                children: [
+                  // Browse Exercises
+                  Expanded(
+                    child: _QuickActionCard(
+                      icon: Icons.fitness_center,
+                      label: 'Exercise\nLibrary',
+                      color: AppColors.primary,
+                      onTap: () => context.push(AppRoutes.exercises),
+                    ),
+                  ),
+                  AppSpacing.horizontalMD,
+                  // Browse Programs
+                  Expanded(
+                    child: _QuickActionCard(
+                      icon: Icons.calendar_month,
+                      label: 'Browse\nPrograms',
+                      color: AppColors.tertiary,
+                      onTap: () => context.push(AppRoutes.programs),
+                    ),
+                  ),
+                ],
+              ),
+              AppSpacing.verticalMD,
+              
+              Row(
+                children: [
+                  // Quick Workout
+                  Expanded(
+                    child: _QuickActionCard(
+                      icon: Icons.bolt,
+                      label: 'Quick\nWorkout',
+                      color: AppColors.secondary,
+                      onTap: () => context.push('/quick-workout/fullbody'),
+                    ),
+                  ),
+                  AppSpacing.horizontalMD,
+                  // Progress
+                  Expanded(
+                    child: _QuickActionCard(
+                      icon: Icons.trending_up,
+                      label: 'View\nProgress',
+                      color: AppColors.success,
+                      onTap: () => context.push(AppRoutes.progress),
+                    ),
+                  ),
+                ],
+              ),
+              
+              AppSpacing.verticalXXL,
+              
               // Logout button
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
+                child: OutlinedButton(
                   onPressed: () async {
                     final authService = ref.read(authServiceProvider);
                     await authService.signOut();
@@ -106,9 +158,9 @@ class HomeScreen extends ConsumerWidget {
                       context.go(AppRoutes.welcome);
                     }
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.error,
-                    foregroundColor: Colors.white,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.error,
+                    side: const BorderSide(color: AppColors.error),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -125,6 +177,50 @@ class HomeScreen extends ConsumerWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Quick action card widget for home screen
+class _QuickActionCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _QuickActionCard({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: color.withAlpha(25),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: color.withAlpha(60)),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 32),
+            AppSpacing.verticalSM,
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: AppTypography.labelSmall.copyWith(
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
         ),
       ),
     );
