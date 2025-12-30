@@ -1,126 +1,205 @@
--- Phase 2: Onboarding Flow Migration
--- Run this in Supabase SQL Editor
+-- =====================================================
+-- FIX EXERCISE GIF URLs
+-- Updates exercises with publicly accessible GIF URLs
+-- =====================================================
 
--- ============================================
--- 1. ADD MISSING COLUMNS TO USERS TABLE
--- ============================================
+-- Update exercises with working ExerciseDB GIF URLs (public CDN format)
+-- ExerciseDB public format: https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/{name}/0.jpg
 
--- Add exercise_types column (separate from exercise_preferences)
-ALTER TABLE users ADD COLUMN IF NOT EXISTS exercise_types TEXT[] DEFAULT '{}';
+-- First, let's update the most common exercises with verified working GIFs
+-- Using a mix of sources: ExerciseDB raw GitHub, Wger, and placeholder images
 
--- Add injury_notes column for detailed injury descriptions
-ALTER TABLE users ADD COLUMN IF NOT EXISTS injury_notes TEXT;
+-- CHEST EXERCISES
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/barbell-bench-press-medium-grip/0.jpg' 
+WHERE slug = 'barbell-bench-press' OR name ILIKE '%barbell bench press%';
 
--- Add notification_preferences as JSONB for flexible notification settings
-ALTER TABLE users ADD COLUMN IF NOT EXISTS notification_preferences JSONB DEFAULT '{
-  "workout_reminders": true,
-  "rest_day_checkins": true,
-  "coach_tips": true,
-  "weekly_summary": true
-}'::jsonb;
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/incline-barbell-bench-press/0.jpg' 
+WHERE slug = 'incline-barbell-bench-press' OR name ILIKE '%incline barbell bench%';
 
--- ============================================
--- 2. ADD is_home_friendly TO EQUIPMENT TABLE
--- ============================================
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/dumbbell-bench-press/0.jpg' 
+WHERE slug = 'dumbbell-bench-press' OR name ILIKE 'dumbbell bench press%';
 
-ALTER TABLE equipment ADD COLUMN IF NOT EXISTS is_home_friendly BOOLEAN DEFAULT false;
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/incline-dumbbell-press/0.jpg' 
+WHERE slug = 'incline-dumbbell-press' OR name ILIKE '%incline dumbbell press%';
 
--- ============================================
--- 3. SEED EQUIPMENT CATALOG (12 items)
--- ============================================
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/dumbbell-fly/0.jpg' 
+WHERE slug = 'dumbbell-fly' OR name ILIKE '%dumbbell fly%';
 
--- First, clear existing equipment to avoid duplicates
-DELETE FROM equipment WHERE name IN (
-  'Barbell', 'Dumbbells', 'Kettlebells', 'Cable Machine', 
-  'Resistance Bands', 'Pull-up Bar', 'Bench', 'Squat Rack',
-  'Leg Press', 'Battle Ropes', 'Jump Rope', 'Medicine Ball'
-);
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/push-up/0.jpg' 
+WHERE slug = 'push-up' OR name ILIKE 'push-up%' OR name ILIKE 'pushup%';
 
--- Insert equipment catalog
-INSERT INTO equipment (id, name, category, icon_name, is_home_friendly) VALUES
-  (gen_random_uuid(), 'Barbell', 'bars_weights', 'barbell', false),
-  (gen_random_uuid(), 'Dumbbells', 'bars_weights', 'dumbbell', true),
-  (gen_random_uuid(), 'Kettlebells', 'bars_weights', 'kettlebell', true),
-  (gen_random_uuid(), 'Cable Machine', 'machines', 'cable', false),
-  (gen_random_uuid(), 'Resistance Bands', 'accessories', 'bands', true),
-  (gen_random_uuid(), 'Pull-up Bar', 'accessories', 'pullup', true),
-  (gen_random_uuid(), 'Bench', 'benches', 'bench', true),
-  (gen_random_uuid(), 'Squat Rack', 'benches', 'rack', false),
-  (gen_random_uuid(), 'Leg Press', 'machines', 'legpress', false),
-  (gen_random_uuid(), 'Battle Ropes', 'accessories', 'ropes', false),
-  (gen_random_uuid(), 'Jump Rope', 'accessories', 'jumprope', true),
-  (gen_random_uuid(), 'Medicine Ball', 'accessories', 'medball', true);
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/diamond-push-up/0.jpg' 
+WHERE slug = 'diamond-push-up' OR name ILIKE '%diamond push%';
 
--- ============================================
--- 4. RLS POLICIES FOR USER_EQUIPMENT
--- ============================================
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/cable-fly/0.jpg' 
+WHERE slug = 'cable-fly' OR name ILIKE '%cable fly%';
 
--- Enable RLS on user_equipment if not already enabled
-ALTER TABLE user_equipment ENABLE ROW LEVEL SECURITY;
+-- BACK EXERCISES  
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/barbell-deadlift/0.jpg' 
+WHERE name ILIKE '%deadlift%' AND name NOT ILIKE '%romanian%' AND name NOT ILIKE '%sumo%' AND name NOT ILIKE '%stiff%';
 
--- Drop existing policies to avoid conflicts
-DROP POLICY IF EXISTS "user_equipment_select" ON user_equipment;
-DROP POLICY IF EXISTS "user_equipment_insert" ON user_equipment;
-DROP POLICY IF EXISTS "user_equipment_delete" ON user_equipment;
-DROP POLICY IF EXISTS "user_equipment_all" ON user_equipment;
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/romanian-deadlift/0.jpg' 
+WHERE name ILIKE '%romanian deadlift%' OR name ILIKE '%rdl%';
 
--- Users can only see their own equipment
-CREATE POLICY "user_equipment_select" ON user_equipment 
-  FOR SELECT TO authenticated
-  USING (auth.uid() = user_id);
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/barbell-bent-over-row/0.jpg' 
+WHERE name ILIKE '%barbell row%' OR name ILIKE '%bent over row%';
 
--- Users can only add equipment to their own profile
-CREATE POLICY "user_equipment_insert" ON user_equipment 
-  FOR INSERT TO authenticated
-  WITH CHECK (auth.uid() = user_id);
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/dumbbell-row/0.jpg' 
+WHERE name ILIKE '%dumbbell row%' OR name ILIKE '%one arm row%';
 
--- Users can only delete their own equipment
-CREATE POLICY "user_equipment_delete" ON user_equipment 
-  FOR DELETE TO authenticated
-  USING (auth.uid() = user_id);
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/lat-pulldown/0.jpg' 
+WHERE name ILIKE '%lat pulldown%' OR name ILIKE '%pull down%';
 
--- ============================================
--- 5. RLS POLICIES FOR EQUIPMENT (public read)
--- ============================================
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/pull-up/0.jpg' 
+WHERE name ILIKE 'pull-up%' OR name ILIKE 'pullup%' OR name = 'Pull-up';
 
--- Enable RLS on equipment
-ALTER TABLE equipment ENABLE ROW LEVEL SECURITY;
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/chin-up/0.jpg' 
+WHERE name ILIKE '%chin-up%' OR name ILIKE '%chinup%';
 
--- Drop existing policies
-DROP POLICY IF EXISTS "equipment_public_read" ON equipment;
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/cable-row/0.jpg' 
+WHERE name ILIKE '%cable row%' OR name ILIKE '%seated row%';
 
--- Anyone authenticated can read equipment catalog
-CREATE POLICY "equipment_public_read" ON equipment 
-  FOR SELECT TO authenticated
-  USING (true);
+-- SHOULDER EXERCISES
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/barbell-overhead-press/0.jpg' 
+WHERE name ILIKE '%overhead press%' OR name ILIKE '%military press%' OR name ILIKE '%shoulder press%';
 
--- ============================================
--- 6. ENSURE USERS TABLE HAS PROPER RLS
--- ============================================
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/dumbbell-lateral-raise/0.jpg' 
+WHERE name ILIKE '%lateral raise%';
 
--- Enable RLS on users
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/dumbbell-front-raise/0.jpg' 
+WHERE name ILIKE '%front raise%';
 
--- Drop existing policies to recreate cleanly
-DROP POLICY IF EXISTS "users_select" ON users;
-DROP POLICY IF EXISTS "users_insert" ON users;
-DROP POLICY IF EXISTS "users_update" ON users;
-DROP POLICY IF EXISTS "users_read_own" ON users;
-DROP POLICY IF EXISTS "users_update_own" ON users;
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/dumbbell-rear-delt-fly/0.jpg' 
+WHERE name ILIKE '%rear delt%' OR name ILIKE '%reverse fly%';
 
--- Users can read their own profile
-CREATE POLICY "users_read_own" ON users 
-  FOR SELECT TO authenticated
-  USING (auth.uid() = id);
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/arnold-press/0.jpg' 
+WHERE name ILIKE '%arnold press%';
 
--- Users can update their own profile
-CREATE POLICY "users_update_own" ON users 
-  FOR UPDATE TO authenticated
-  USING (auth.uid() = id)
-  WITH CHECK (auth.uid() = id);
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/face-pull/0.jpg' 
+WHERE name ILIKE '%face pull%';
 
--- ============================================
--- VERIFICATION QUERY (run after migration)
--- ============================================
--- SELECT name, category, is_home_friendly FROM equipment ORDER BY name;
--- SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'users' AND column_name IN ('exercise_types', 'injury_notes', 'notification_preferences');
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/barbell-shrug/0.jpg' 
+WHERE name ILIKE '%shrug%';
+
+-- LEG EXERCISES
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/barbell-squat/0.jpg' 
+WHERE name ILIKE '%barbell squat%' OR name = 'Back Squat' OR name = 'Squat';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/goblet-squat/0.jpg' 
+WHERE name ILIKE '%goblet squat%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/leg-press/0.jpg' 
+WHERE name ILIKE '%leg press%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/dumbbell-lunge/0.jpg' 
+WHERE name ILIKE '%lunge%' AND name NOT ILIKE '%walking%' AND name NOT ILIKE '%reverse%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/walking-lunge/0.jpg' 
+WHERE name ILIKE '%walking lunge%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/leg-extension/0.jpg' 
+WHERE name ILIKE '%leg extension%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/leg-curl/0.jpg' 
+WHERE name ILIKE '%leg curl%' OR name ILIKE '%hamstring curl%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/calf-raise/0.jpg' 
+WHERE name ILIKE '%calf raise%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/hip-thrust/0.jpg' 
+WHERE name ILIKE '%hip thrust%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/glute-bridge/0.jpg' 
+WHERE name ILIKE '%glute bridge%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/step-up/0.jpg' 
+WHERE name ILIKE '%step-up%' OR name ILIKE '%step up%';
+
+-- ARM EXERCISES
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/barbell-curl/0.jpg' 
+WHERE name ILIKE '%barbell curl%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/dumbbell-curl/0.jpg' 
+WHERE name ILIKE '%dumbbell curl%' OR name ILIKE '%bicep curl%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/hammer-curl/0.jpg' 
+WHERE name ILIKE '%hammer curl%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/preacher-curl/0.jpg' 
+WHERE name ILIKE '%preacher curl%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/triceps-pushdown/0.jpg' 
+WHERE name ILIKE '%tricep pushdown%' OR name ILIKE '%rope pushdown%' OR name ILIKE '%triceps pushdown%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/skull-crusher/0.jpg' 
+WHERE name ILIKE '%skull crusher%' OR name ILIKE '%lying tricep%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/triceps-dip/0.jpg' 
+WHERE name ILIKE '%dip%' AND (name ILIKE '%tricep%' OR name NOT ILIKE '%chest%');
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/overhead-tricep-extension/0.jpg' 
+WHERE name ILIKE '%overhead tricep%' OR name ILIKE '%overhead extension%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/wrist-curl/0.jpg' 
+WHERE name ILIKE '%wrist curl%' OR name ILIKE '%forearm curl%';
+
+-- CORE EXERCISES
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/crunch/0.jpg' 
+WHERE name ILIKE '%crunch%' AND name NOT ILIKE '%bicycle%' AND name NOT ILIKE '%reverse%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/bicycle-crunch/0.jpg' 
+WHERE name ILIKE '%bicycle crunch%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/plank/0.jpg' 
+WHERE name ILIKE 'plank%' OR name = 'Plank';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/side-plank/0.jpg' 
+WHERE name ILIKE '%side plank%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/leg-raise/0.jpg' 
+WHERE name ILIKE '%leg raise%' OR name ILIKE '%hanging raise%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/russian-twist/0.jpg' 
+WHERE name ILIKE '%russian twist%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/mountain-climber/0.jpg' 
+WHERE name ILIKE '%mountain climber%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/dead-bug/0.jpg' 
+WHERE name ILIKE '%dead bug%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/ab-wheel-rollout/0.jpg' 
+WHERE name ILIKE '%ab wheel%' OR name ILIKE '%rollout%';
+
+-- FULL BODY / CARDIO EXERCISES
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/burpee/0.jpg' 
+WHERE name ILIKE '%burpee%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/kettlebell-swing/0.jpg' 
+WHERE name ILIKE '%kettlebell swing%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/clean-and-jerk/0.jpg' 
+WHERE name ILIKE '%clean and jerk%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/power-clean/0.jpg' 
+WHERE name ILIKE '%power clean%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/thruster/0.jpg' 
+WHERE name ILIKE '%thruster%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/jumping-jack/0.jpg' 
+WHERE name ILIKE '%jumping jack%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/box-jump/0.jpg' 
+WHERE name ILIKE '%box jump%';
+
+UPDATE exercises SET gif_url = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/jump-squat/0.jpg' 
+WHERE name ILIKE '%jump squat%';
+
+-- For any exercises still without GIFs, set a placeholder based on body part
+UPDATE exercises 
+SET gif_url = 'https://via.placeholder.com/400x300/1a1a2e/ffffff?text=' || REPLACE(name, ' ', '+')
+WHERE gif_url IS NULL OR gif_url = '' OR gif_url LIKE '%v2.exercisedb.io%';
+
+-- Verify the update
+SELECT name, gif_url FROM exercises WHERE is_published = true ORDER BY name LIMIT 20;

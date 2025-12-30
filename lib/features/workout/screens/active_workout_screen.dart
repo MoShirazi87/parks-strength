@@ -8,6 +8,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/algorithms/progressive_overload.dart';
+import '../../../core/utils/exercise_assets.dart';
 import '../../../data/providers/workout_provider.dart';
 import '../../../data/services/gif_service.dart';
 import '../../../shared/models/workout_model.dart';
@@ -606,53 +607,29 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
     required int targetReps,
     String? exerciseImageUrl,
   }) {
-    // Get exercise GIF using provided URL or fallback to centralized GIF service
-    final imageUrl = exerciseImageUrl ?? GifService().getGifUrl(exerciseName);
-    debugPrint('GIF for "$exerciseName": $imageUrl');
+    // Try local asset first, then network URL
+    final localAsset = ExerciseAssets.getLocalAsset(exerciseName);
+    final networkUrl = exerciseImageUrl ?? GifService().getGifUrl(exerciseName);
+    debugPrint('Exercise "$exerciseName": local=$localAsset, network=$networkUrl');
     
     return SingleChildScrollView(
       padding: AppSpacing.screenHorizontalPadding,
       child: Column(
         children: [
           // Exercise GIF/Image
-          if (imageUrl.isNotEmpty)
-            Container(
-              height: 180,
-              width: double.infinity,
-              margin: const EdgeInsets.only(bottom: 16),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.contain,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded / 
-                              loadingProgress.expectedTotalBytes!
-                            : null,
-                        color: AppColors.primary,
-                      ),
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) {
-                    return Center(
-                      child: Icon(
-                        Icons.fitness_center,
-                        size: 48,
-                        color: AppColors.textMuted,
-                      ),
-                    );
-                  },
-                ),
-              ),
+          Container(
+            height: 180,
+            width: double.infinity,
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(16),
             ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: _buildExerciseImage(exerciseName, localAsset, networkUrl),
+            ),
+          ),
           
           // Exercise name
           Text(
@@ -828,6 +805,61 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
           AppSpacing.verticalXL,
         ],
       ),
+    );
+  }
+  
+  Widget _buildExerciseImage(String exerciseName, String? localAsset, String networkUrl) {
+    // Try local asset first
+    if (localAsset != null) {
+      return Image.asset(
+        localAsset,
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) {
+          // If local asset fails, try network
+          return _buildNetworkImage(networkUrl);
+        },
+      );
+    }
+    
+    // Fall back to network image
+    return _buildNetworkImage(networkUrl);
+  }
+  
+  Widget _buildNetworkImage(String imageUrl) {
+    if (imageUrl.isEmpty) {
+      return Center(
+        child: Icon(
+          Icons.fitness_center,
+          size: 48,
+          color: AppColors.textMuted,
+        ),
+      );
+    }
+    
+    return Image.network(
+      imageUrl,
+      fit: BoxFit.contain,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Center(
+          child: CircularProgressIndicator(
+            value: loadingProgress.expectedTotalBytes != null
+                ? loadingProgress.cumulativeBytesLoaded / 
+                  loadingProgress.expectedTotalBytes!
+                : null,
+            color: AppColors.primary,
+          ),
+        );
+      },
+      errorBuilder: (context, error, stackTrace) {
+        return Center(
+          child: Icon(
+            Icons.fitness_center,
+            size: 48,
+            color: AppColors.textMuted,
+          ),
+        );
+      },
     );
   }
   

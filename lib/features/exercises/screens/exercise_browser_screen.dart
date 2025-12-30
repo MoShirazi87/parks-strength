@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_typography.dart';
+import '../../../core/utils/exercise_assets.dart';
 import '../../../data/providers/exercise_filter_provider.dart';
 import '../../../shared/models/exercise_model.dart';
 
@@ -430,45 +431,12 @@ class _ExerciseCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // GIF/Image
+            // GIF/Image - prioritize local assets
             Expanded(
               flex: 3,
               child: Container(
                 color: AppColors.surface,
-                child: exercise.bestGifUrl != null
-                    ? Image.network(
-                        exercise.bestGifUrl!,
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
-                                  : null,
-                              strokeWidth: 2,
-                              color: AppColors.primary,
-                            ),
-                          );
-                        },
-                        errorBuilder: (context, error, stack) {
-                          return Center(
-                            child: Icon(
-                              Icons.fitness_center,
-                              color: AppColors.textMuted,
-                              size: 40,
-                            ),
-                          );
-                        },
-                      )
-                    : Center(
-                        child: Icon(
-                          Icons.fitness_center,
-                          color: AppColors.textMuted,
-                          size: 40,
-                        ),
-                      ),
+                child: _buildExerciseImage(exercise),
               ),
             ),
             
@@ -504,6 +472,73 @@ class _ExerciseCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+  
+  Widget _buildExerciseImage(ExerciseModel exercise) {
+    // First, try to use a local asset
+    final localAsset = ExerciseAssets.getLocalAsset(exercise.name);
+    
+    if (localAsset != null) {
+      return Image.asset(
+        localAsset,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stack) {
+          return _buildPlaceholder();
+        },
+      );
+    }
+    
+    // Fall back to network image
+    final networkUrl = exercise.bestGifUrl;
+    if (networkUrl != null && networkUrl.isNotEmpty) {
+      return Image.network(
+        networkUrl,
+        fit: BoxFit.cover,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Center(
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                  : null,
+              strokeWidth: 2,
+              color: AppColors.primary,
+            ),
+          );
+        },
+        errorBuilder: (context, error, stack) {
+          return _buildPlaceholder();
+        },
+      );
+    }
+    
+    return _buildPlaceholder();
+  }
+  
+  Widget _buildPlaceholder() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.fitness_center,
+            color: AppColors.textMuted,
+            size: 40,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            exercise.name,
+            style: AppTypography.caption.copyWith(
+              color: AppColors.textMuted,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }
