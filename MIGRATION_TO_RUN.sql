@@ -1,223 +1,126 @@
--- =====================================================
--- COMPLETE FIX: ALL RLS POLICIES IN ONE PLACE
--- This fixes enrollment, workouts, exercises - everything
--- =====================================================
+-- Phase 2: Onboarding Flow Migration
+-- Run this in Supabase SQL Editor
 
--- =====================================================
--- 0. USERS TABLE & USER EQUIPMENT
--- =====================================================
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+-- ============================================
+-- 1. ADD MISSING COLUMNS TO USERS TABLE
+-- ============================================
 
-DO $$
-DECLARE r RECORD;
-BEGIN
-  FOR r IN SELECT policyname FROM pg_policies WHERE tablename = 'users'
-  LOOP
-    EXECUTE format('DROP POLICY IF EXISTS %I ON users', r.policyname);
-  END LOOP;
-END $$;
+-- Add exercise_types column (separate from exercise_preferences)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS exercise_types TEXT[] DEFAULT '{}';
 
-CREATE POLICY "users_read_own" ON users FOR SELECT TO authenticated USING (auth.uid() = id);
-CREATE POLICY "users_update_own" ON users FOR UPDATE TO authenticated USING (auth.uid() = id);
-CREATE POLICY "users_insert_own" ON users FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
+-- Add injury_notes column for detailed injury descriptions
+ALTER TABLE users ADD COLUMN IF NOT EXISTS injury_notes TEXT;
 
--- User Equipment
+-- Add notification_preferences as JSONB for flexible notification settings
+ALTER TABLE users ADD COLUMN IF NOT EXISTS notification_preferences JSONB DEFAULT '{
+  "workout_reminders": true,
+  "rest_day_checkins": true,
+  "coach_tips": true,
+  "weekly_summary": true
+}'::jsonb;
+
+-- ============================================
+-- 2. ADD is_home_friendly TO EQUIPMENT TABLE
+-- ============================================
+
+ALTER TABLE equipment ADD COLUMN IF NOT EXISTS is_home_friendly BOOLEAN DEFAULT false;
+
+-- ============================================
+-- 3. SEED EQUIPMENT CATALOG (12 items)
+-- ============================================
+
+-- First, clear existing equipment to avoid duplicates
+DELETE FROM equipment WHERE name IN (
+  'Barbell', 'Dumbbells', 'Kettlebells', 'Cable Machine', 
+  'Resistance Bands', 'Pull-up Bar', 'Bench', 'Squat Rack',
+  'Leg Press', 'Battle Ropes', 'Jump Rope', 'Medicine Ball'
+);
+
+-- Insert equipment catalog
+INSERT INTO equipment (id, name, category, icon_name, is_home_friendly) VALUES
+  (gen_random_uuid(), 'Barbell', 'bars_weights', 'barbell', false),
+  (gen_random_uuid(), 'Dumbbells', 'bars_weights', 'dumbbell', true),
+  (gen_random_uuid(), 'Kettlebells', 'bars_weights', 'kettlebell', true),
+  (gen_random_uuid(), 'Cable Machine', 'machines', 'cable', false),
+  (gen_random_uuid(), 'Resistance Bands', 'accessories', 'bands', true),
+  (gen_random_uuid(), 'Pull-up Bar', 'accessories', 'pullup', true),
+  (gen_random_uuid(), 'Bench', 'benches', 'bench', true),
+  (gen_random_uuid(), 'Squat Rack', 'benches', 'rack', false),
+  (gen_random_uuid(), 'Leg Press', 'machines', 'legpress', false),
+  (gen_random_uuid(), 'Battle Ropes', 'accessories', 'ropes', false),
+  (gen_random_uuid(), 'Jump Rope', 'accessories', 'jumprope', true),
+  (gen_random_uuid(), 'Medicine Ball', 'accessories', 'medball', true);
+
+-- ============================================
+-- 4. RLS POLICIES FOR USER_EQUIPMENT
+-- ============================================
+
+-- Enable RLS on user_equipment if not already enabled
 ALTER TABLE user_equipment ENABLE ROW LEVEL SECURITY;
 
-DO $$
-DECLARE r RECORD;
-BEGIN
-  FOR r IN SELECT policyname FROM pg_policies WHERE tablename = 'user_equipment'
-  LOOP
-    EXECUTE format('DROP POLICY IF EXISTS %I ON user_equipment', r.policyname);
-  END LOOP;
-END $$;
+-- Drop existing policies to avoid conflicts
+DROP POLICY IF EXISTS "user_equipment_select" ON user_equipment;
+DROP POLICY IF EXISTS "user_equipment_insert" ON user_equipment;
+DROP POLICY IF EXISTS "user_equipment_delete" ON user_equipment;
+DROP POLICY IF EXISTS "user_equipment_all" ON user_equipment;
 
-CREATE POLICY "user_equipment_select" ON user_equipment FOR SELECT TO authenticated USING (auth.uid() = user_id);
-CREATE POLICY "user_equipment_insert" ON user_equipment FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "user_equipment_delete" ON user_equipment FOR DELETE TO authenticated USING (auth.uid() = user_id);
+-- Users can only see their own equipment
+CREATE POLICY "user_equipment_select" ON user_equipment 
+  FOR SELECT TO authenticated
+  USING (auth.uid() = user_id);
 
--- =====================================================
--- 1. ENROLLMENT TABLE
--- =====================================================
-ALTER TABLE user_program_enrollments ENABLE ROW LEVEL SECURITY;
+-- Users can only add equipment to their own profile
+CREATE POLICY "user_equipment_insert" ON user_equipment 
+  FOR INSERT TO authenticated
+  WITH CHECK (auth.uid() = user_id);
 
--- Drop all enrollment policies dynamically
-DO $$
-DECLARE r RECORD;
-BEGIN
-  FOR r IN SELECT policyname FROM pg_policies WHERE tablename = 'user_program_enrollments'
-  LOOP
-    EXECUTE format('DROP POLICY IF EXISTS %I ON user_program_enrollments', r.policyname);
-  END LOOP;
-END $$;
+-- Users can only delete their own equipment
+CREATE POLICY "user_equipment_delete" ON user_equipment 
+  FOR DELETE TO authenticated
+  USING (auth.uid() = user_id);
 
--- Add unique constraint if missing
-DO $$
-BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'user_program_enrollments_user_program_unique') THEN
-    ALTER TABLE user_program_enrollments ADD CONSTRAINT user_program_enrollments_user_program_unique UNIQUE (user_id, program_id);
-  END IF;
-END $$;
+-- ============================================
+-- 5. RLS POLICIES FOR EQUIPMENT (public read)
+-- ============================================
 
--- Create enrollment policies
-CREATE POLICY "enroll_select" ON user_program_enrollments FOR SELECT TO authenticated USING (auth.uid() = user_id);
-CREATE POLICY "enroll_insert" ON user_program_enrollments FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "enroll_update" ON user_program_enrollments FOR UPDATE TO authenticated USING (auth.uid() = user_id);
-CREATE POLICY "enroll_delete" ON user_program_enrollments FOR DELETE TO authenticated USING (auth.uid() = user_id);
+-- Enable RLS on equipment
+ALTER TABLE equipment ENABLE ROW LEVEL SECURITY;
 
--- =====================================================
--- 2. PROGRAMS TABLE
--- =====================================================
-ALTER TABLE programs ENABLE ROW LEVEL SECURITY;
+-- Drop existing policies
+DROP POLICY IF EXISTS "equipment_public_read" ON equipment;
 
-DO $$
-DECLARE r RECORD;
-BEGIN
-  FOR r IN SELECT policyname FROM pg_policies WHERE tablename = 'programs'
-  LOOP
-    EXECUTE format('DROP POLICY IF EXISTS %I ON programs', r.policyname);
-  END LOOP;
-END $$;
+-- Anyone authenticated can read equipment catalog
+CREATE POLICY "equipment_public_read" ON equipment 
+  FOR SELECT TO authenticated
+  USING (true);
 
-CREATE POLICY "programs_read" ON programs FOR SELECT TO authenticated USING (is_published = true);
+-- ============================================
+-- 6. ENSURE USERS TABLE HAS PROPER RLS
+-- ============================================
 
--- =====================================================
--- 3. WORKOUTS TABLE
--- =====================================================
-ALTER TABLE workouts ENABLE ROW LEVEL SECURITY;
+-- Enable RLS on users
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 
-DO $$
-DECLARE r RECORD;
-BEGIN
-  FOR r IN SELECT policyname FROM pg_policies WHERE tablename = 'workouts'
-  LOOP
-    EXECUTE format('DROP POLICY IF EXISTS %I ON workouts', r.policyname);
-  END LOOP;
-END $$;
+-- Drop existing policies to recreate cleanly
+DROP POLICY IF EXISTS "users_select" ON users;
+DROP POLICY IF EXISTS "users_insert" ON users;
+DROP POLICY IF EXISTS "users_update" ON users;
+DROP POLICY IF EXISTS "users_read_own" ON users;
+DROP POLICY IF EXISTS "users_update_own" ON users;
 
-CREATE POLICY "workouts_read" ON workouts FOR SELECT TO authenticated USING (true);
+-- Users can read their own profile
+CREATE POLICY "users_read_own" ON users 
+  FOR SELECT TO authenticated
+  USING (auth.uid() = id);
 
--- =====================================================
--- 4. WORKOUT_SECTIONS TABLE
--- =====================================================
-ALTER TABLE workout_sections ENABLE ROW LEVEL SECURITY;
+-- Users can update their own profile
+CREATE POLICY "users_update_own" ON users 
+  FOR UPDATE TO authenticated
+  USING (auth.uid() = id)
+  WITH CHECK (auth.uid() = id);
 
-DO $$
-DECLARE r RECORD;
-BEGIN
-  FOR r IN SELECT policyname FROM pg_policies WHERE tablename = 'workout_sections'
-  LOOP
-    EXECUTE format('DROP POLICY IF EXISTS %I ON workout_sections', r.policyname);
-  END LOOP;
-END $$;
-
-CREATE POLICY "sections_read" ON workout_sections FOR SELECT TO authenticated USING (true);
-
--- =====================================================
--- 5. WORKOUT_EXERCISES TABLE
--- =====================================================
-ALTER TABLE workout_exercises ENABLE ROW LEVEL SECURITY;
-
-DO $$
-DECLARE r RECORD;
-BEGIN
-  FOR r IN SELECT policyname FROM pg_policies WHERE tablename = 'workout_exercises'
-  LOOP
-    EXECUTE format('DROP POLICY IF EXISTS %I ON workout_exercises', r.policyname);
-  END LOOP;
-END $$;
-
-CREATE POLICY "exercises_read" ON workout_exercises FOR SELECT TO authenticated USING (true);
-
--- =====================================================
--- 6. EXERCISES TABLE
--- =====================================================
-ALTER TABLE exercises ENABLE ROW LEVEL SECURITY;
-
-DO $$
-DECLARE r RECORD;
-BEGIN
-  FOR r IN SELECT policyname FROM pg_policies WHERE tablename = 'exercises'
-  LOOP
-    EXECUTE format('DROP POLICY IF EXISTS %I ON exercises', r.policyname);
-  END LOOP;
-END $$;
-
-CREATE POLICY "exercises_read" ON exercises FOR SELECT TO authenticated USING (true);
-
--- =====================================================
--- 7. WORKOUT_LOGS TABLE (for logging sets)
--- =====================================================
-ALTER TABLE workout_logs ENABLE ROW LEVEL SECURITY;
-
-DO $$
-DECLARE r RECORD;
-BEGIN
-  FOR r IN SELECT policyname FROM pg_policies WHERE tablename = 'workout_logs'
-  LOOP
-    EXECUTE format('DROP POLICY IF EXISTS %I ON workout_logs', r.policyname);
-  END LOOP;
-END $$;
-
-CREATE POLICY "logs_select" ON workout_logs FOR SELECT TO authenticated USING (auth.uid() = user_id);
-CREATE POLICY "logs_insert" ON workout_logs FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "logs_update" ON workout_logs FOR UPDATE TO authenticated USING (auth.uid() = user_id);
-
--- =====================================================
--- 8. EXERCISE_LOGS TABLE
--- =====================================================
-ALTER TABLE exercise_logs ENABLE ROW LEVEL SECURITY;
-
-DO $$
-DECLARE r RECORD;
-BEGIN
-  FOR r IN SELECT policyname FROM pg_policies WHERE tablename = 'exercise_logs'
-  LOOP
-    EXECUTE format('DROP POLICY IF EXISTS %I ON exercise_logs', r.policyname);
-  END LOOP;
-END $$;
-
-CREATE POLICY "exlogs_select" ON exercise_logs FOR SELECT TO authenticated USING (true);
-CREATE POLICY "exlogs_insert" ON exercise_logs FOR INSERT TO authenticated WITH CHECK (true);
-CREATE POLICY "exlogs_update" ON exercise_logs FOR UPDATE TO authenticated USING (true);
-
--- =====================================================
--- 9. SET_LOGS TABLE
--- =====================================================
-ALTER TABLE set_logs ENABLE ROW LEVEL SECURITY;
-
-DO $$
-DECLARE r RECORD;
-BEGIN
-  FOR r IN SELECT policyname FROM pg_policies WHERE tablename = 'set_logs'
-  LOOP
-    EXECUTE format('DROP POLICY IF EXISTS %I ON set_logs', r.policyname);
-  END LOOP;
-END $$;
-
-CREATE POLICY "setlogs_select" ON set_logs FOR SELECT TO authenticated USING (true);
-CREATE POLICY "setlogs_insert" ON set_logs FOR INSERT TO authenticated WITH CHECK (true);
-CREATE POLICY "setlogs_update" ON set_logs FOR UPDATE TO authenticated USING (true);
-
--- =====================================================
--- VERIFY ALL POLICIES
--- =====================================================
-SELECT 'All RLS Policies:' as status;
-SELECT tablename, policyname, cmd 
-FROM pg_policies 
-WHERE schemaname = 'public' 
-AND tablename IN (
-  'users', 
-  'user_equipment',
-  'user_program_enrollments', 
-  'programs', 
-  'workouts', 
-  'workout_sections', 
-  'workout_exercises', 
-  'exercises', 
-  'workout_logs', 
-  'exercise_logs', 
-  'set_logs'
-)
-ORDER BY tablename, policyname;
+-- ============================================
+-- VERIFICATION QUERY (run after migration)
+-- ============================================
+-- SELECT name, category, is_home_friendly FROM equipment ORDER BY name;
+-- SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'users' AND column_name IN ('exercise_types', 'injury_notes', 'notification_preferences');

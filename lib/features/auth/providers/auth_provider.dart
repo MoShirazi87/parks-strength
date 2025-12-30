@@ -9,7 +9,7 @@ final authStateProvider = StreamProvider<User?>((ref) {
   return supabase.auth.onAuthStateChange.map((event) => event.session?.user);
 });
 
-/// Current user provider
+/// Current user provider - fetches user profile from database
 final currentUserProvider = FutureProvider<UserModel?>((ref) async {
   final authState = ref.watch(authStateProvider);
   
@@ -17,14 +17,19 @@ final currentUserProvider = FutureProvider<UserModel?>((ref) async {
     data: (user) async {
       if (user == null) return null;
       
-      final response = await supabase
-          .from('users')
-          .select()
-          .eq('id', user.id)
-          .maybeSingle();
-      
-      if (response == null) return null;
-      return UserModel.fromJson(response);
+      try {
+        final response = await supabase
+            .from('users')
+            .select()
+            .eq('id', user.id)
+            .maybeSingle();
+        
+        if (response == null) return null;
+        return UserModel.fromJson(response);
+      } catch (e) {
+        print('Error fetching user profile: $e');
+        return null;
+      }
     },
     loading: () => null,
     error: (_, __) => null,
@@ -44,6 +49,7 @@ final authServiceProvider = Provider<AuthService>((ref) {
 
 /// Auth service for handling authentication operations
 class AuthService {
+  
   /// Sign up with email and password
   Future<AuthResponse> signUpWithEmail({
     required String email,
@@ -60,25 +66,56 @@ class AuthService {
       },
     );
     
-    // User profile is created automatically by database trigger
-    // Update with first/last name after signup
-    if (response.user != null && (firstName != null || lastName != null)) {
-      // Small delay to let trigger complete
+    // User profile should be created by database trigger
+    // Wait a moment for trigger to complete, then ensure profile exists
+    if (response.user != null) {
       await Future.delayed(const Duration(milliseconds: 500));
+      await _ensureProfileExists(response.user!.id, email, firstName, lastName);
+    }
+    
+    return response;
+  }
+  
+  /// Ensure user profile exists in database (fallback if trigger fails)
+  Future<void> _ensureProfileExists(
+    String userId, 
+    String email, 
+    String? firstName, 
+    String? lastName,
+  ) async {
+    try {
+      // Check if profile exists
+      final existing = await supabase
+          .from('users')
+          .select('id')
+          .eq('id', userId)
+          .maybeSingle();
       
-      try {
+      if (existing == null) {
+        // Profile doesn't exist - create it
+        print('AuthService: Creating user profile (trigger may have failed)');
+        await supabase.from('users').insert({
+          'id': userId,
+          'email': email,
+          'first_name': firstName,
+          'last_name': lastName,
+          'onboarding_completed': false,
+          'created_at': DateTime.now().toIso8601String(),
+          'updated_at': DateTime.now().toIso8601String(),
+        });
+        print('AuthService: Profile created successfully');
+      } else if (firstName != null || lastName != null) {
+        // Profile exists - update with name if provided
         await supabase.from('users').update({
           if (firstName != null) 'first_name': firstName,
           if (lastName != null) 'last_name': lastName,
           'updated_at': DateTime.now().toIso8601String(),
-        }).eq('id', response.user!.id);
-      } catch (e) {
-        // Ignore update errors - profile was still created
-        print('Note: Could not update profile with name: $e');
+        }).eq('id', userId);
       }
+    } catch (e) {
+      print('AuthService: Error ensuring profile exists: $e');
+      // Don't throw - auth succeeded, profile creation is secondary
     }
-    
-    return response;
   }
   
   /// Sign in with email and password
@@ -86,10 +123,18 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    return await supabase.auth.signInWithPassword(
-      email: email,
-      password: password,
-    );
+    try {
+      return await supabase.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+    } on AuthException catch (e) {
+      // Provide user-friendly error messages
+      if (e.message.contains('Invalid login credentials')) {
+        throw AuthException('Invalid email or password');
+      }
+      rethrow;
+    }
   }
   
   /// Sign in with Apple
@@ -187,33 +232,29 @@ class AuthService {
     if (receiveWeeklyProgressReports != null) updates['notification_weekly_progress'] = receiveWeeklyProgressReports;
     
     try {
-      // First check if user profile exists
-      final existingUser = await supabase
+      // First try to update existing profile
+      final existing = await supabase
           .from('users')
           .select('id')
           .eq('id', userId)
           .maybeSingle();
       
-      if (existingUser != null) {
-        // User exists, update
+      if (existing != null) {
+        // Profile exists - update it
         await supabase
             .from('users')
             .update(updates)
             .eq('id', userId);
         print('Profile updated successfully: ${updates.keys.join(', ')}');
       } else {
-        // User doesn't exist, create with upsert
+        // Profile doesn't exist - create it
         final email = supabase.auth.currentUser?.email ?? '';
-        final insertData = {
+        await supabase.from('users').insert({
           'id': userId,
           'email': email,
           'created_at': DateTime.now().toIso8601String(),
           ...updates,
-        };
-        
-        await supabase
-            .from('users')
-            .upsert(insertData, onConflict: 'id');
+        });
         print('Profile created successfully: ${updates.keys.join(', ')}');
       }
       
@@ -225,31 +266,7 @@ class AuthService {
       return true;
     } catch (e) {
       print('Error updating profile: $e');
-      // Try upsert as fallback
-      try {
-        final email = supabase.auth.currentUser?.email ?? '';
-        final insertData = {
-          'id': userId,
-          'email': email,
-          'created_at': DateTime.now().toIso8601String(),
-          ...updates,
-        };
-        
-        await supabase
-            .from('users')
-            .upsert(insertData, onConflict: 'id');
-        print('Profile upserted successfully (fallback): ${updates.keys.join(', ')}');
-        
-        // Save user equipment if provided
-        if (equipment != null && equipment.isNotEmpty) {
-          await _saveUserEquipment(userId, equipment);
-        }
-        
-        return true;
-      } catch (e2) {
-        print('Error upserting profile: $e2');
-        return false;
-      }
+      return false;
     }
   }
   
@@ -307,8 +324,8 @@ class AuthService {
   }
   
   /// Complete onboarding
-  Future<void> completeOnboarding() async {
-    await updateProfile(onboardingCompleted: true);
+  Future<bool> completeOnboarding() async {
+    return await updateProfile(onboardingCompleted: true);
   }
   
   /// Get current user ID
@@ -405,4 +422,3 @@ final authStateNotifierProvider =
     StateNotifierProvider<AuthStateNotifier, AsyncValue<void>>((ref) {
   return AuthStateNotifier(ref.watch(authServiceProvider));
 });
-

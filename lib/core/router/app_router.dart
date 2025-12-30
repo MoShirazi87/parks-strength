@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../features/auth/screens/welcome_screen.dart';
 import '../../features/auth/screens/sign_in_screen.dart';
@@ -78,69 +79,57 @@ final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 // Router provider
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authStateProvider);
-  final currentUser = ref.watch(currentUserProvider);
+  // Watch auth state to trigger router refresh on auth changes
+  ref.watch(authStateProvider);
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: AppRoutes.splash,
     debugLogDiagnostics: true,
 
-    // Redirect logic based on auth state
+    // Fixed redirect logic - check Supabase session directly
     redirect: (context, state) {
-      final isOnAuthRoute = state.matchedLocation == AppRoutes.welcome ||
-          state.matchedLocation == AppRoutes.signIn ||
-          state.matchedLocation == AppRoutes.signUp ||
-          state.matchedLocation == AppRoutes.forgotPassword;
-      final isOnSplash = state.matchedLocation == AppRoutes.splash;
-      final isOnOnboarding = state.matchedLocation == AppRoutes.onboarding ||
-          state.matchedLocation == AppRoutes.programRecommendation;
-
-      // Don't redirect from splash - it handles its own navigation
-      if (isOnSplash) return null;
-
-      // Don't redirect during loading states - let splash handle initial nav
-      final isAuthLoading = authState.isLoading;
-      final isUserLoading = currentUser.isLoading;
-      if (isAuthLoading || isUserLoading) {
+      final currentPath = state.matchedLocation;
+      
+      // STEP 1: Check authentication using direct Supabase session
+      final session = Supabase.instance.client.auth.currentSession;
+      final isLoggedIn = session != null;
+      
+      print('Router: path=$currentPath, session=${session != null ? "exists" : "null"}');
+      
+      // Never redirect from splash - it handles its own navigation
+      if (currentPath == AppRoutes.splash) {
         return null;
       }
 
-      final isLoggedIn = authState.valueOrNull != null;
+      // Define public routes (accessible without login)
+      final publicRoutes = [
+        AppRoutes.welcome,
+        AppRoutes.signIn,
+        AppRoutes.signUp,
+        AppRoutes.forgotPassword,
+      ];
+      final isPublicRoute = publicRoutes.contains(currentPath);
 
-      // If not logged in and not on auth route, go to welcome
-      if (!isLoggedIn && !isOnAuthRoute) {
+      // STEP 2: Handle unauthenticated users
+      if (!isLoggedIn) {
+        // Allow access to public routes
+        if (isPublicRoute) {
+          return null;
+        }
+        // Redirect all protected routes to welcome
+        print('Router: Not logged in, redirecting to welcome');
         return AppRoutes.welcome;
       }
 
-      // If logged in
-      if (isLoggedIn) {
-        // Check if user profile is loaded
-        final user = currentUser.valueOrNull;
-        
-        // If user profile is not loaded yet, don't redirect
-        // (splash screen or normal flow will handle it)
-        if (user == null) {
-          // If on auth route and logged in but no profile, go to onboarding
-          if (isOnAuthRoute) {
-            return AppRoutes.onboarding;
-          }
-          return null;
-        }
-        
-        final hasCompletedOnboarding = user.onboardingCompleted;
-        
-        // If on auth route, redirect based on onboarding status
-        if (isOnAuthRoute) {
-          return hasCompletedOnboarding ? AppRoutes.home : AppRoutes.onboarding;
-        }
-        
-        // If not on onboarding route and hasn't completed onboarding
-        if (!isOnOnboarding && !hasCompletedOnboarding) {
-          return AppRoutes.onboarding;
-        }
+      // STEP 3: User is logged in
+      // If on public route, redirect to home (let splash handle onboarding check)
+      if (isPublicRoute) {
+        print('Router: Logged in on public route, redirecting to home');
+        return AppRoutes.home;
       }
 
+      // Allow access to onboarding and all other routes for logged in users
       return null;
     },
 
@@ -311,4 +300,3 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     ),
   );
 });
-

@@ -12,13 +12,16 @@ class UserModel extends Equatable {
   final String? experienceLevel;
   final List<String> goals;
   final List<String> exercisePreferences;
+  final List<String> exerciseTypes;
   final List<String> injuries;
+  final String? injuryNotes;
   final String? trainingLocation;
   final List<String> preferredDays;
   final String? preferredTime;
   final String? reminderTime;
   final String unitsPreference;
   final bool onboardingCompleted;
+  final Map<String, bool> notificationPreferences;
   final int points;
   final int streakCurrent;
   final int streakLongest;
@@ -41,13 +44,21 @@ class UserModel extends Equatable {
     this.experienceLevel,
     this.goals = const [],
     this.exercisePreferences = const [],
+    this.exerciseTypes = const [],
     this.injuries = const [],
+    this.injuryNotes,
     this.trainingLocation,
     this.preferredDays = const [],
     this.preferredTime,
     this.reminderTime,
     this.unitsPreference = 'imperial',
     this.onboardingCompleted = false,
+    this.notificationPreferences = const {
+      'workout_reminders': true,
+      'rest_day_checkins': true,
+      'coach_tips': true,
+      'weekly_summary': true,
+    },
     this.points = 0,
     this.streakCurrent = 0,
     this.streakLongest = 0,
@@ -62,6 +73,18 @@ class UserModel extends Equatable {
 
   /// Create from Supabase JSON response
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    // Parse notification preferences from JSONB
+    Map<String, bool> notifPrefs = {
+      'workout_reminders': true,
+      'rest_day_checkins': true,
+      'coach_tips': true,
+      'weekly_summary': true,
+    };
+    if (json['notification_preferences'] != null) {
+      final prefs = json['notification_preferences'] as Map<String, dynamic>;
+      notifPrefs = prefs.map((k, v) => MapEntry(k, v as bool? ?? true));
+    }
+    
     return UserModel(
       id: json['id'] as String,
       email: json['email'] as String,
@@ -77,7 +100,10 @@ class UserModel extends Equatable {
       exercisePreferences:
           (json['exercise_preferences'] as List<dynamic>?)?.cast<String>() ??
               [],
+      exerciseTypes:
+          (json['exercise_types'] as List<dynamic>?)?.cast<String>() ?? [],
       injuries: (json['injuries'] as List<dynamic>?)?.cast<String>() ?? [],
+      injuryNotes: json['injury_notes'] as String?,
       trainingLocation: json['training_location'] as String?,
       preferredDays:
           (json['preferred_days'] as List<dynamic>?)?.cast<String>() ?? [],
@@ -85,6 +111,7 @@ class UserModel extends Equatable {
       reminderTime: json['reminder_time'] as String?,
       unitsPreference: json['units_preference'] as String? ?? 'imperial',
       onboardingCompleted: json['onboarding_completed'] as bool? ?? false,
+      notificationPreferences: notifPrefs,
       points: json['points'] as int? ?? 0,
       streakCurrent: json['current_streak'] as int? ?? json['streak_current'] as int? ?? 0,
       streakLongest: json['longest_streak'] as int? ?? json['streak_longest'] as int? ?? 0,
@@ -119,13 +146,16 @@ class UserModel extends Equatable {
       'experience_level': experienceLevel,
       'goals': goals,
       'exercise_preferences': exercisePreferences,
+      'exercise_types': exerciseTypes,
       'injuries': injuries,
+      'injury_notes': injuryNotes,
       'training_location': trainingLocation,
       'preferred_days': preferredDays,
       'preferred_time': preferredTime,
       'reminder_time': reminderTime,
       'units_preference': unitsPreference,
       'onboarding_completed': onboardingCompleted,
+      'notification_preferences': notificationPreferences,
       'points': points,
       'streak_current': streakCurrent,
       'streak_longest': streakLongest,
@@ -170,13 +200,16 @@ class UserModel extends Equatable {
     String? experienceLevel,
     List<String>? goals,
     List<String>? exercisePreferences,
+    List<String>? exerciseTypes,
     List<String>? injuries,
+    String? injuryNotes,
     String? trainingLocation,
     List<String>? preferredDays,
     String? preferredTime,
     String? reminderTime,
     String? unitsPreference,
     bool? onboardingCompleted,
+    Map<String, bool>? notificationPreferences,
     int? points,
     int? streakCurrent,
     int? streakLongest,
@@ -199,13 +232,16 @@ class UserModel extends Equatable {
       experienceLevel: experienceLevel ?? this.experienceLevel,
       goals: goals ?? this.goals,
       exercisePreferences: exercisePreferences ?? this.exercisePreferences,
+      exerciseTypes: exerciseTypes ?? this.exerciseTypes,
       injuries: injuries ?? this.injuries,
+      injuryNotes: injuryNotes ?? this.injuryNotes,
       trainingLocation: trainingLocation ?? this.trainingLocation,
       preferredDays: preferredDays ?? this.preferredDays,
       preferredTime: preferredTime ?? this.preferredTime,
       reminderTime: reminderTime ?? this.reminderTime,
       unitsPreference: unitsPreference ?? this.unitsPreference,
       onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
+      notificationPreferences: notificationPreferences ?? this.notificationPreferences,
       points: points ?? this.points,
       streakCurrent: streakCurrent ?? this.streakCurrent,
       streakLongest: streakLongest ?? this.streakLongest,
@@ -231,13 +267,16 @@ class UserModel extends Equatable {
         experienceLevel,
         goals,
         exercisePreferences,
+        exerciseTypes,
         injuries,
+        injuryNotes,
         trainingLocation,
         preferredDays,
         preferredTime,
         reminderTime,
         unitsPreference,
         onboardingCompleted,
+        notificationPreferences,
         points,
         streakCurrent,
         streakLongest,

@@ -56,14 +56,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     if (!mounted) return;
 
-    // Check if there's actually a logged in user session
-    final supabaseUser = Supabase.instance.client.auth.currentUser;
+    final supabase = Supabase.instance.client;
+    final supabaseUser = supabase.auth.currentUser;
     
     print('Splash: Checking auth state...');
     print('Splash: Current user = ${supabaseUser?.id ?? "null"}');
     
+    // No user logged in - go to welcome screen
     if (supabaseUser == null) {
-      // No user logged in - go to welcome screen for login/signup
       print('Splash: No user session, going to welcome');
       if (mounted) {
         context.go(AppRoutes.welcome);
@@ -71,9 +71,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       return;
     }
     
-    // User is logged in - check if profile exists and onboarding status
+    // User is logged in - check if profile exists
     try {
-      final userProfile = await Supabase.instance.client
+      final userProfile = await supabase
           .from('users')
           .select('id, onboarding_completed')
           .eq('id', supabaseUser.id)
@@ -84,20 +84,39 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       print('Splash: User profile = $userProfile');
       
       if (userProfile == null) {
-        // User profile doesn't exist - this means they signed up but profile wasn't created
-        // Go to onboarding to create profile
-        print('Splash: No profile found, going to onboarding');
-        context.go(AppRoutes.onboarding);
+        // Profile doesn't exist - try to create it (fallback if trigger failed)
+        print('Splash: No profile found, attempting to create...');
+        try {
+          await supabase.from('users').insert({
+            'id': supabaseUser.id,
+            'email': supabaseUser.email ?? '',
+            'onboarding_completed': false,
+            'created_at': DateTime.now().toIso8601String(),
+            'updated_at': DateTime.now().toIso8601String(),
+          });
+          print('Splash: Profile created successfully');
+        } catch (e) {
+          print('Splash: Could not create profile: $e');
+          // If we can't create profile, still go to onboarding
+          // The onboarding screen will handle profile creation
+        }
+        
+        if (mounted) {
+          context.go(AppRoutes.onboarding);
+        }
         return;
       }
       
+      // Profile exists - check onboarding status
       final hasCompleted = userProfile['onboarding_completed'] == true;
       print('Splash: Onboarding completed = $hasCompleted');
       
-      if (hasCompleted) {
-        context.go(AppRoutes.home);
-      } else {
-        context.go(AppRoutes.onboarding);
+      if (mounted) {
+        if (hasCompleted) {
+          context.go(AppRoutes.home);
+        } else {
+          context.go(AppRoutes.onboarding);
+        }
       }
     } catch (e) {
       print('Splash: Error checking profile: $e');
@@ -190,4 +209,3 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     );
   }
 }
-
