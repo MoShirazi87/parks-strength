@@ -123,10 +123,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       }
 
       // STEP 3: User is logged in
-      // If on public route, redirect to home (let splash handle onboarding check)
+      // If on public route, redirect to splash (which checks onboarding status)
       if (isPublicRoute) {
-        print('Router: Logged in on public route, redirecting to home');
-        return AppRoutes.home;
+        print('Router: Logged in on public route, redirecting to splash for onboarding check');
+        return AppRoutes.splash;
       }
 
       // Allow access to onboarding and all other routes for logged in users
